@@ -3,6 +3,7 @@ package Server;
 import java.util.ArrayList;
 
 public class Account {
+    public static int count=1000;
     private String accountNumber;
     private String password;
     private AccountType accountType;
@@ -14,6 +15,7 @@ public class Account {
     public Account(AccountType accountType, String password) {
         this.accountType = accountType;
         this.password = password;
+        Account.count++;
     }
 
     //********************
@@ -86,6 +88,7 @@ public class Account {
 
     public void getLoan(String amount, int month) {
         this.getLoans().add(new Loan(amount, month));
+        this.setBalance(MyMath.findSum(this.getBalance(),amount));
     }
 
     public void payLoan() {
@@ -101,8 +104,8 @@ public class Account {
         }
     }
 
-    public void payBill(Bill bill) throws Exception {
-        String newBalance = MyMath.findDiff(this.getBalance(), bill.getAmount());
+    public void payBill(String amount) throws Exception {
+        String newBalance = MyMath.findDiff(this.getBalance(), amount);
         if (newBalance.charAt(0) == '-') throw new Exception("Account balance is insufficient.");
         else this.setBalance(newBalance);
     }

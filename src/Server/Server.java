@@ -11,6 +11,7 @@ public class Server {
     public Server() {
         try {
             server = new ServerSocket(port);
+
             while (true) {
                 Socket client = server.accept();
                 Thread thread = new Thread(new ClientManager(this, client));
