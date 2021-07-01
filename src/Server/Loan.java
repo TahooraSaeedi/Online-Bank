@@ -1,9 +1,9 @@
 package Server;
 
 public class Loan {
-    private String amount;
-    private int months;
-    private String eachMonth;
+    private final String amount;
+    private final int months;
+    private final String eachMonth;
     private long time;
 
     public Loan(String amount, int months) {
@@ -17,24 +17,12 @@ public class Loan {
         return amount;
     }
 
-    public void setAmount(String amount) {
-        this.amount = amount;
-    }
-
     public int getMonths() {
         return months;
     }
 
-    public void setMonths(int months) {
-        this.months = months;
-    }
-
     public String getEachMonth() {
         return eachMonth;
-    }
-
-    public void setEachMonth(String eachMonth) {
-        this.eachMonth = eachMonth;
     }
 
     public long getTime() {

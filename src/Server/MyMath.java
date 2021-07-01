@@ -1,6 +1,6 @@
 package Server;
 
-public class MyMath {
+public abstract class MyMath {
 
     public static String findSum(String str1, String str2) {
         if (str1.length() > str2.length()) {

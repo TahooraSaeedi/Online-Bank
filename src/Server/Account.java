@@ -1,21 +1,26 @@
 package Server;
 
 import java.util.ArrayList;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Account {
-    public static int count=1000;
     private String accountNumber;
-    private String password;
-    private AccountType accountType;
+    private final String password;
+    private final AccountType accountType;
     private String alias;
     private String balance;
     private ArrayList<Transaction> transactions;
     private ArrayList<Loan> loans;
 
     public Account(AccountType accountType, String password) {
-        this.accountType = accountType;
+        this.accountNumber = "";
         this.password = password;
-        Account.count++;
+        this.accountType = accountType;
+        this.alias = "Personal Account";
+        this.balance = "0";
+        this.transactions = new ArrayList<Transaction>();
+        this.loans = new ArrayList<Loan>();
     }
 
     //********************
@@ -32,16 +37,8 @@ public class Account {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public AccountType getAccountType() {
         return accountType;
-    }
-
-    public void setAccountType(AccountType accountType) {
-        this.accountType = accountType;
     }
 
     public String getAlias() {
@@ -64,31 +61,15 @@ public class Account {
         return transactions;
     }
 
-    public void setTransactions(ArrayList<Transaction> transactions) {
-        this.transactions = transactions;
-    }
-
     public ArrayList<Loan> getLoans() {
         return loans;
     }
 
-    public void setLoans(ArrayList<Loan> loans) {
-        this.loans = loans;
-    }
-
     //********************
-
-    public boolean compareTo(Account account) {
-        boolean result = false;
-        if (account != null) {
-            if (this.getAccountNumber().compareTo(account.getAccountNumber()) == 0) result = true;
-        }
-        return result;
-    }
 
     public void getLoan(String amount, int month) {
         this.getLoans().add(new Loan(amount, month));
-        this.setBalance(MyMath.findSum(this.getBalance(),amount));
+        this.setBalance(MyMath.findSum(this.getBalance(), amount));
     }
 
     public void payLoan() {
@@ -96,26 +77,45 @@ public class Account {
             for (Loan loan : this.getLoans()) {
                 int time = (int) ((System.currentTimeMillis() - loan.getTime()) / (2592000000L));
                 String toPay = MyMath.findMultiply(loan.getEachMonth(), (time + ""));
-                if (MyMath.findDiff(this.getBalance(), loan.getAmount()).charAt(0) != '-') {
+                if (MyMath.findDiff(this.getBalance(), toPay).charAt(0) != '-') {
                     this.setBalance(MyMath.findDiff(this.getBalance(), toPay));
+                    this.transactions.add(new Transaction(this.getAccountNumber(), "Loan", toPay));
                     loan.setTime(System.currentTimeMillis());
                 }
             }
         }
     }
 
-    public void payBill(String amount) throws Exception {
+    public void payBill(String amount) throws InsufficientFundsException {
         String newBalance = MyMath.findDiff(this.getBalance(), amount);
-        if (newBalance.charAt(0) == '-') throw new Exception("Account balance is insufficient.");
-        else this.setBalance(newBalance);
-    }
-
-    public void moneyTransfer(Account destination, String amount) throws Exception {
-        String newBalance = MyMath.findDiff(this.getBalance(), amount);
-        if (newBalance.charAt(0) == '-') throw new Exception("Account balance is insufficient.");
+        if (newBalance.charAt(0) == '-') throw new InsufficientFundsException();
         else {
             this.setBalance(newBalance);
-            destination.setBalance(MyMath.findSum(destination.getBalance(), amount));
+            this.transactions.add(new Transaction(this.getAccountNumber(), "Bill", amount));
+        }
+    }
+
+    public void moneyTransfer(String destination, String amount, String password) throws Exception {
+        if (this.getPassword().compareTo(password) != 0) throw new InvalidPasswordException();
+        boolean found = false;
+        Account destinationAccount = null;
+        for (Account account : Information.accounts) {
+            if (account.getAccountNumber().compareTo(destination) == 0) {
+                destinationAccount = account;
+                found = true;
+                break;
+            }
+        }
+        if (!found) throw new InvalidAccountNumberException();
+        else {
+            String newBalance = MyMath.findDiff(this.getBalance(), amount);
+            if (newBalance.charAt(0) == '-') throw new InsufficientFundsException();
+            else {
+                this.setBalance(newBalance);
+                destinationAccount.setBalance(MyMath.findSum(destinationAccount.getBalance(), amount));
+                this.transactions.add(new Transaction(this.getAccountNumber(), destination, amount));
+                destinationAccount.transactions.add(new Transaction(this.getAccountNumber(), destination, amount));
+            }
         }
     }
 

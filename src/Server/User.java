@@ -5,7 +5,7 @@ import java.util.ArrayList;
 public class User {
 
     private String name;
-    private String nationalId;
+    private final String nationalId;
     private String password;
     private String phoneNumber;
     private String email;
@@ -18,6 +18,8 @@ public class User {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.accounts = new ArrayList<Account>();
+        this.favoriteAccounts = new ArrayList<Account>();
     }
 
     //********************
@@ -34,9 +36,6 @@ public class User {
         return nationalId;
     }
 
-    public void setNationalId(String nationalId) {
-        this.nationalId = nationalId;
-    }
 
     public String getPassword() {
         return password;
@@ -66,38 +65,38 @@ public class User {
         return accounts;
     }
 
-    public void setAccounts(ArrayList<Account> accounts) {
-        this.accounts = accounts;
-    }
-
     public ArrayList<Account> getFavoriteAccounts() {
         return favoriteAccounts;
     }
 
-    public void setFavoriteAccounts(ArrayList<Account> favoriteAccounts) {
-        this.favoriteAccounts = favoriteAccounts;
-    }
-
     //********************
 
-    public boolean compareTo(User user) {
-        if (user != null) return this.getNationalId() == user.getNationalId();
-        else return false;
+    public Account addAccount(AccountType accountType, String password) {
+        Account newAccount = new Account(accountType, password);
+        this.accounts.add(newAccount);
+        Information.accounts.add(newAccount);
+        return newAccount;
     }
 
-    public void addAccount(AccountType accountType, String password) {
-        this.accounts.add(new Account(accountType, password));
-    }
-
-    public void closeAccount(Account account) {
-        for (Account a : this.accounts) {
-            if (a.compareTo(account)) this.accounts.remove(account);
+    public void closeAccount(String accountNumber) throws CloseAccountException {
+        for (Account account : this.accounts) {
+            if (account.getAccountNumber().compareTo(accountNumber) == 0) {
+                if (account.getBalance().compareTo("0") != 0) throw new CloseAccountException();
+                this.accounts.remove(account);
+                break;
+            }
         }
     }
 
-    public void addUsefulAccount(Account account) {
-        for (Account a : this.accounts) {
-            if (a.compareTo(account)) this.favoriteAccounts.add(account);
+    public void addFavoriteAccount(String accountNumber) throws DuplicateAccountNumberException {
+        for (Account account : this.favoriteAccounts) {
+            if (account.getAccountNumber().compareTo(accountNumber) == 0) throw new DuplicateAccountNumberException();
+        }
+        for (Account account : this.accounts) {
+            if (account.getAccountNumber().compareTo(accountNumber) == 0) {
+                this.favoriteAccounts.add(account);
+                break;
+            }
         }
     }
 

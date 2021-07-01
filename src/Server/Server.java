@@ -5,13 +5,13 @@ import java.io.IOException;
 import java.net.Socket;
 
 public class Server {
-    ServerSocket server;
-    int port = 8080;
+    private ServerSocket server;
+    private final int port = 8080;
 
     public Server() {
         try {
             server = new ServerSocket(port);
-
+            Information.receiveInformation();
             while (true) {
                 Socket client = server.accept();
                 Thread thread = new Thread(new ClientManager(this, client));
@@ -19,6 +19,8 @@ public class Server {
             }
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            Information.sendInformation();
         }
     }
 
