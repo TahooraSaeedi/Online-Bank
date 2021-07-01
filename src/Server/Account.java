@@ -1,10 +1,9 @@
 package Server;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
-public class Account {
+public class Account implements Serializable {
     private String accountNumber;
     private final String password;
     private final AccountType accountType;
