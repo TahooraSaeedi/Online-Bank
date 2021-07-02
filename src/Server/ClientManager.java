@@ -37,6 +37,9 @@ public class ClientManager implements Runnable {
                             currentUser = Entrance.logIn(nationalId, password);
                             writer.println("1");
                             writer.println(currentUser.getNationalId() + "*" + currentUser.getName() + "*" + currentUser.getPassword() + "*" + currentUser.getPhoneNumber() + "*" + currentUser.getEmail() + "*" + currentUser.getAccounts().size() + "*" + currentUser.getFavoriteAccounts().size() + "*");
+                            //----------------------------------------
+                            //AddPhoto.Tahoora
+                            //----------------------------------------
                             for (Account account : currentUser.getAccounts()) {
                                 writer.println(account.getAccountNumber() + "*" + account.getAccountType() + "*" + account.getAlias() + "*");
                             }
@@ -60,9 +63,16 @@ public class ClientManager implements Runnable {
                         String email = x.nextToken();
                         try {
                             currentUser = Entrance.signUp(name, nationalId, password, phoneNumber, email);
+                            int code = (int) (Math.random() * 1000) + 1;
+                            Entrance.sendEmail(email, code);
+                            writer.println("1");
+                            String newCode = reader.readLine();
+                            if (code != Integer.parseInt(newCode)) throw new InvalidEmailAddressException();
                             writer.println("1");
                         } catch (DuplicateNationalId e) {
                             writer.println("0");
+                        } catch (InvalidEmailAddressException e) {
+                            writer.println("-1");
                         }
                         break;
                     }
@@ -75,6 +85,9 @@ public class ClientManager implements Runnable {
                         currentUser.setPassword(x.nextToken());
                         currentUser.setPhoneNumber(x.nextToken());
                         currentUser.setEmail(x.nextToken());
+                        //----------------------------------------
+                        //AddPhoto.MohammadReza
+                        //----------------------------------------
                         break;
                     }
 
