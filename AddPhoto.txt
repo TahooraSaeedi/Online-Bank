@@ -1,0 +1,44 @@
+Tahoora{
+                            //ارسال عکس مخاطب
+                            File file = new File(currentUser.getPhoto());
+                            FileInputStream FIS = new FileInputStream(file);
+                            byte[] image = new byte[(int) file.length()];
+                            FIS.read(image);
+                            DataOutputStream DOS = new DataOutputStream(client.getOutputStream());
+                            DOS.write((int) file.length());
+                            DOS.write(image);
+                            //عکس مخاطب ارسال شد
+                            //کد سمت کلاینت برای دریافت عکس
+                            DataInputStream DIS = new DataInputStream(client.getInputStream());
+                            int number = DIS.readInt();
+                            byte[] image = new byte[number];
+                            DIS.readFully(image, 0, number);
+                            File file = new File("Profile");
+                            FileOutputStream FOS = new FileOutputStream(file);
+                            FOS.write(image);
+                            Image profilePhoto = new Image("file:Profile");
+                            //عکس مخاطب به صورت یک ایمیج  در سمت کلاینت وجود دارد
+}
+MohammadReza{
+                        //اگر عکس رو هم عوض کرده باشه، دریافت عکس جدید از کلاینت
+                        if (x.hasMoreTokens()) {
+                            DataInputStream DIS = new DataInputStream(client.getInputStream());
+                            int number = DIS.readInt();
+                            byte[] image = new byte[number];
+                            DIS.readFully(image, 0, number);
+                            if (currentUser.getPhoto().compareTo(currentUser.getNationalId()) == 0) Files.delete(new File(currentUser.getNationalId()).toPath());
+                            File file = new File(currentUser.getNationalId());
+                            FileOutputStream FOS = new FileOutputStream(file);
+                            FOS.write(image);
+                            currentUser.setPhoto(currentUser.getNationalId());
+                        }
+                        //عکس جدید کاربر در سمت کلاینت ذخیره شد
+                        //کد سمت کلاینت برای تغییر عکس بعد از اینکه در ادامه رشته یک photo هم اضافه کرد یعنی عکس هم دارم میفرستم
+                        File file = new File();
+                        FileInputStream FIS = new FileInputStream(file);
+                        byte[] image = new byte[(int) file.length()];
+                        FIS.read(image);
+                        DataOutputStream DOS = new DataOutputStream(client.getOutputStream());
+                        DOS.write((int) file.length());
+                        DOS.write(image);
+}
