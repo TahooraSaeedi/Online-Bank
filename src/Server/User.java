@@ -10,6 +10,7 @@ public class User implements Serializable {
     private String password;
     private String phoneNumber;
     private String email;
+    private String photo;
     private ArrayList<Account> accounts;
     private ArrayList<Account> favoriteAccounts;
 
@@ -19,6 +20,7 @@ public class User implements Serializable {
         this.password = password;
         this.phoneNumber = phoneNumber;
         this.email = email;
+        this.photo = "Profile.PNG";
         this.accounts = new ArrayList<Account>();
         this.favoriteAccounts = new ArrayList<Account>();
     }
@@ -60,6 +62,14 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public ArrayList<Account> getAccounts() {
