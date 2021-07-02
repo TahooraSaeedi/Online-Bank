@@ -6,17 +6,17 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
 import java.io.*;
 import java.net.Socket;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.StringTokenizer;
 
 public class Client extends Application {
@@ -39,15 +39,22 @@ public class Client extends Application {
     private String numOfAccount;
     private String numOfFavoriteAccount;
 
-    private String numberOfNewAccount;
+    private String numberOfNewAccount; // شماره حساب ساخته شده اولیه
+    private String inventory; // موجودی
+    private String transaction = ""; // صورت حساب حساب
+    private String loan = ""; // وام های حساب
 
-    ArrayList<Account> accounts = new ArrayList<Account>();
-    int checkAccount = 0 ;
+    HashMap<Integer, Account> accounts = new HashMap<Integer, Account>();
+    int countAccount = -1; // تعداد حساب ها
+    int checkAccount = 0; // جا به حا شدن روی  حساب ها
 
-    ArrayList<Account> favoriteAccounts = new ArrayList<Account>();
-    int CheckFavoriteAccount = 0 ;
+    HashMap<Integer, Account> favoriteAccounts = new HashMap<Integer, Account>();
+    int countFavoriteAccount = -1; // تعداد حساب ها
+    int checkFavoriteAccount = 0; // جا به جا شدن روی حساب خا
 
-    public Client() {
+    int accountType = 1; // 1 == accounts  &&  2 == favoriteAccounts
+
+    public Client()  {
         try {
             server = new Socket(serverAddress, port);
             System.out.println("server accept client");
@@ -85,10 +92,10 @@ public class Client extends Application {
             Label welcome = new Label("Welcome to the e-bank app");
             welcome.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 34; -fx-font-weight: bold; -fx-min-width: 418; -fx-max-width: 418; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 342; -fx-translate-y: 38; -fx-text-fill: #E63946; ");
 
-            Button bSignIn = new Button("ورود");
+            Button bSignIn = new Button("ورود");// ورود سمت چپ
             bSignIn.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 114; -fx-translate-y: 190; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
 
-            Button bSingUp = new Button("ثبت نام");
+            Button bSingUp = new Button("ثبت نام");// ثبت نام سمت چپ
             bSingUp.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 114; -fx-translate-y: 304; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
 
             TextField tFNationalId = new TextField();
@@ -99,7 +106,7 @@ public class Client extends Application {
             tFPassword.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 304; -fx-max-width: 304; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 380; -fx-translate-y: 380; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
             tFPassword.setPromptText("رمز عبور");
 
-            Button bSignInFinal = new Button("ورود");
+            Button bSignInFinal = new Button("ورود");// برای اتصال به سرور
             bSignInFinal.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 114; -fx-max-width: 114; -fx-min-height: 38; -fx-max-height: 38;-fx-translate-x: 475; -fx-translate-y: 494; -fx-background-radius: 15px; -fx-background-color: #A8DADC; ");
 
             bSingUp.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -108,7 +115,7 @@ public class Client extends Application {
                     entrance = 2;
                     scene.setRoot(entrance());
                 }
-            });
+            }); // برای رفتن به صفحه ثبت نام
 
             bSignInFinal.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
@@ -136,7 +143,8 @@ public class Client extends Application {
                                     String accountType = saveInformation.nextToken();
                                     String alias = saveInformation.nextToken();
                                     Account newAccount = new Account(accountNumber, AccountType.valueOf(accountType), alias);
-                                    accounts.add(newAccount);
+                                    countAccount = i;
+                                    accounts.put(countAccount, newAccount);
                                 }
 
                                 for (int i = 0; i < Integer.parseInt(numOfFavoriteAccount); i++) {
@@ -145,16 +153,17 @@ public class Client extends Application {
                                     String accountType = saveInformation.nextToken();
                                     String alias = saveInformation.nextToken();
                                     Account newAccount = new Account(accountNumber, AccountType.valueOf(accountType), alias);
-                                    favoriteAccounts.add(newAccount);
+                                    countFavoriteAccount = i;
+                                    favoriteAccounts.put(countFavoriteAccount, newAccount);
                                 }
 
                                 scene.setRoot(homePage());
-                            } else {
+                            } else if (answer.equals("0")) {
                                 tFNationalId.clear();
                                 tFPassword.clear();
 
-                                Pane backgroundPage = new Pane();
-                                backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+                                Pane newBackgroundPage = new Pane();
+                                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
                                 Pane errorSignIn = new Pane();
                                 errorSignIn.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
@@ -167,13 +176,13 @@ public class Client extends Application {
                                 bError.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
 
                                 errorSignIn.getChildren().addAll(tFError, bError);
-                                backgroundPage.getChildren().add(errorSignIn);
-                                signIn.getChildren().add(backgroundPage);
+                                newBackgroundPage.getChildren().add(errorSignIn);
+                                signIn.getChildren().add(newBackgroundPage);
 
                                 bError.setOnMouseClicked(new EventHandler<MouseEvent>() {
                                     @Override
                                     public void handle(MouseEvent event) {
-                                        signIn.getChildren().remove(backgroundPage);
+                                        signIn.getChildren().remove(newBackgroundPage);
                                     }
                                 });
                             }
@@ -186,17 +195,17 @@ public class Client extends Application {
 
             signIn.getChildren().addAll(welcome, bSignIn, bSingUp, tFNationalId, tFPassword, bSignInFinal);
             return signIn;
-        } else {
+        } else if (entrance == 2) {
             Pane signUp = new Pane();
             signUp.setStyle("-fx-background-color: #1D3557; -fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
             Label welcome = new Label("Welcome to the e-bank app");
             welcome.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 34; -fx-font-weight: bold; -fx-min-width: 418; -fx-max-width: 418; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 342; -fx-translate-y: 38; -fx-text-fill: #E63946; ");
 
-            Button bSignIn = new Button("ورود");
+            Button bSignIn = new Button("ورود");// دکمه سمت چپ
             bSignIn.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 114; -fx-translate-y: 190; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
 
-            Button bSingUp = new Button("ثبت نام");
+            Button bSingUp = new Button("ثبت نام");// دکمه سمت چپ
             bSingUp.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 114; -fx-translate-y: 304; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
 
             TextField tFName = new TextField();
@@ -219,7 +228,7 @@ public class Client extends Application {
             tFEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 304; -fx-max-width: 304; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 380; -fx-translate-y: 380; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
             tFEmail.setPromptText("ایمیل");
 
-            Button bSignUpFinal = new Button("ثبت نام");
+            Button bSignUpFinal = new Button("ثبت نام");// برای اتصال به سرور
             bSignUpFinal.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 114; -fx-max-width: 114; -fx-min-height: 38; -fx-max-height: 38;-fx-translate-x: 475; -fx-translate-y: 494; -fx-background-radius: 15px; -fx-background-color: #A8DADC; ");
 
             bSignIn.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -229,12 +238,7 @@ public class Client extends Application {
                     scene.setRoot(entrance());
                 }
             });
-            bSingUp.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    entrance = 2;
-                }
-            });
+
             bSignUpFinal.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
@@ -252,30 +256,101 @@ public class Client extends Application {
                                 phoneNumber = tFPhoneNumber.getText();
                                 email = tFEmail.getText();
 
-                                scene.setRoot(homePage());
-                            } else if (answer.equals("0")) {
+                                Pane newBackgroundPage = new Pane();
+                                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
-                                Pane backgroundPage = new Pane();
-                                backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+                                Pane checkEmail = new Pane();
+                                checkEmail.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                                TextArea tFCheckEmail = new TextArea();
+                                tFCheckEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+
+                                Button bCheckEmail = new Button("OK");
+                                bCheckEmail.setShape(new Circle(5));
+                                bCheckEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                                checkEmail.getChildren().addAll(tFCheckEmail, bCheckEmail);
+                                newBackgroundPage.getChildren().add(checkEmail);
+                                signUp.getChildren().add(newBackgroundPage);
+
+                                bCheckEmail.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                    @Override
+                                    public void handle(MouseEvent event) {
+                                        if (!tFCheckEmail.getText().equals("")) {
+                                            writer.println(tFCheckEmail.getText());
+                                        }
+                                        try {
+                                            String answer = reader.readLine();
+                                            if (answer.equals("1")) {
+                                                scene.setRoot(homePage());
+                                            } else if (answer.equals("-1")) {
+
+                                                Pane newBackgroundPage = new Pane();
+                                                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                                                Pane checkEmail = new Pane();
+                                                checkEmail.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                                                TextArea tFCheckEmail = new TextArea();
+                                                tFCheckEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                                                tFCheckEmail.setText("کد ورودی اشتباه است");
+                                                tFCheckEmail.editableProperty().asObject().set(false);
+
+                                                Button bCheckEmail = new Button("OK");
+                                                bCheckEmail.setShape(new Circle(5));
+                                                bCheckEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                                                checkEmail.getChildren().addAll(tFCheckEmail, bCheckEmail);
+                                                newBackgroundPage.getChildren().add(checkEmail);
+                                                signUp.getChildren().add(newBackgroundPage);
+
+                                                bCheckEmail.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                                    @Override
+                                                    public void handle(MouseEvent event) {
+                                                        scene.setRoot(entrance());
+                                                    }
+                                                });
+                                            }
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                });
+
+                            } else if (answer.equals("0") || answer.equals("-1")) {
+
+                                Pane newBackgroundPage = new Pane();
+                                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
                                 Pane errorSignUp = new Pane();
                                 errorSignUp.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
 
-                                TextArea tFError = new TextArea("کاربر با کد ملی وارد شده از قبل ثبت نام شده است");
+                                TextArea tFError = new TextArea();
+                                if (answer.equals("0")) {
+                                    tFError.setText("کد ملی وارد شده تکراری است");
+                                } else if (answer.equals("-1")) {
+                                    tFError.setText("ایمیل وارد شده صحیح نیست");
+                                }
                                 tFError.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                                tFError.editableProperty().asObject().set(false);
 
                                 Button bError = new Button("OK");
                                 bError.setShape(new Circle(5));
-                                bError.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+                                bError.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
 
                                 errorSignUp.getChildren().addAll(tFError, bError);
-                                backgroundPage.getChildren().add(errorSignUp);
-                                signUp.getChildren().add(backgroundPage);
+                                newBackgroundPage.getChildren().add(errorSignUp);
+                                signUp.getChildren().add(newBackgroundPage);
 
                                 bError.setOnMouseClicked(new EventHandler<MouseEvent>() {
                                     @Override
                                     public void handle(MouseEvent event) {
-                                        signUp.getChildren().remove(backgroundPage);
+                                        tFNationalId.clear();
+                                        tFName.clear();
+                                        tFPassword.clear();
+                                        tFPhoneNumber.clear();
+                                        tFEmail.clear();
+                                        signUp.getChildren().remove(newBackgroundPage);
                                     }
                                 });
                             }
@@ -289,6 +364,7 @@ public class Client extends Application {
             signUp.getChildren().addAll(welcome, bSignIn, bSingUp, tFName, tFNationalId, tFPassword, tFPhoneNumber, tFEmail, bSignUpFinal);
             return signUp;
         }
+        return new Pane();
     }
 
     private Pane homePage() {
@@ -299,9 +375,6 @@ public class Client extends Application {
         Image image = new Image("file:src/picture/Inkedphoto_2021-06-29_03-11-07_LI.jpg");
         Circle circle = new Circle(95);
         circle.setStyle("-fx-translate-x: 133; -fx-translate-y: 114");
-//            imageView.setStyle("-fx-translate-x: 38; -fx-translate-y: 19");
-//            imageView.fitWidthProperty().set(190);
-//            imageView.fitHeightProperty().set(190);
 
         Button bUserProfile = new Button("پروفایل کاربری");
         bUserProfile.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 57; -fx-translate-y: 247; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
@@ -327,18 +400,24 @@ public class Client extends Application {
         Rectangle rBox = new Rectangle(456, 228, Color.rgb(241, 250, 238));
         rBox.setStyle("-fx-translate-x: 304; -fx-translate-y: 152; -fx-border-radius: 15px");
 
-        Button bGoLeft = new Button();
-        bGoLeft.setShape(new Circle(5));
-        bGoLeft.setStyle("-fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 323; -fx-translate-y: 247;");
 
-        Label lInformationAccount = new Label("حساب کاری" +
-                "\n" + " سرمایه گذاری بلند مدت" +
-                "\n" + "6062 5611 96 2402");// اطلاعات از اری لیست حساب ها خوانده میشود
+        Circle imageLeft = new Circle(342, 266, 19);
+        imageLeft.setFill(new ImagePattern(new Image("file:src/Client/picture/Left.png")));
+
+        Label lInformationAccount = new Label();// اطلاعات از هش مپ حساب ها خوانده میشود
+//        if (accountType == 1) {
+//            lInformationAccount.setText(accounts.get(checkAccount).getAlias() + "\n" +
+//                    accounts.get(checkAccount).getAccountType() + "\n" +
+//                    accounts.get(checkAccount).getAccountNumber());
+//        } else if (accountType == 2) {
+//            lInformationAccount.setText(favoriteAccounts.get(checkFavoriteAccount).getAlias() + "\n" +
+//                    favoriteAccounts.get(checkFavoriteAccount).getAccountType() + "\n" +
+//                    favoriteAccounts.get(checkFavoriteAccount).getAccountNumber());
+//        }
         lInformationAccount.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 25; -fx-font-weight: bold;  -fx-min-width: 304; -fx-max-width: 304; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 380; -fx-translate-y: 190; -fx-background-radius: 15px; -fx-background-color: " + "#FFDDD2; -fx-text-fill: #000000; ");
 
-        Button bGoRight = new Button();
-        bGoRight.setShape(new Circle(5));
-        bGoRight.setStyle("-fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 703; -fx-translate-y: 247;");
+        Circle imageRight = new Circle(722, 266, 19);
+        imageRight.setFill(new ImagePattern(new Image("file:src/Client/picture/Right.png")));
 
         Button bTransaction = new Button("صورت حساب");//تراکنش
         bTransaction.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 11; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 323; -fx-translate-y: 399; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
@@ -372,9 +451,116 @@ public class Client extends Application {
             }
         });
 
+        bExit.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Pane newBackgroundPage = new Pane();
+                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                Pane successfulExit = new Pane();
+                successfulExit.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                TextArea tFSuccessful = new TextArea("ایا میخوای بری بیرون؟");
+                tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                tFSuccessful.editableProperty().asObject().set(false);
+
+                Button bSuccessful = new Button("OK");
+                bSuccessful.setShape(new Circle(5));
+                bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 10; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                Button bNo = new Button("NO");
+                bNo.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 10; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 38; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                successfulExit.getChildren().addAll(tFSuccessful, bSuccessful, bNo);
+                newBackgroundPage.getChildren().add(successfulExit);
+                homePage.getChildren().add(newBackgroundPage);
+
+                bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        writer.println("15");
+                        System.exit(0);
+                    }
+                });
+
+                bNo.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        scene.setRoot(homePage());
+                    }
+                });
+            }
+        });
+
+        bAllAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                accountType = 1;
+                checkAccount = 0;
+            }
+        });
+
+        bFavoriteAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                accountType = 2;
+                checkFavoriteAccount = 0;
+            }
+        });
+
+        imageLeft.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (accountType == 1) {
+                    if (checkAccount > 0) {
+                        checkAccount--;
+                    }
+                } else if (accountType == 2) {
+                    if (checkFavoriteAccount > 0) {
+                        checkFavoriteAccount--;
+                    }
+                }
+            }
+        });
+
+        imageRight.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (accountType == 1) {
+                    if (checkAccount < countAccount) {
+                        checkAccount++;
+                    }
+                } else if (accountType == 2) {
+                    if (checkFavoriteAccount < countFavoriteAccount) {
+                        checkFavoriteAccount++;
+                    }
+                }
+            }
+        });
+
         bTransaction.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                try {
+                    writer.println("8");
+                    if (accountType == 1) {
+                        writer.println(accounts.get(checkAccount).getAccountNumber());
+                    } else if (accountType == 2) {
+                        writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber());
+                    }
+
+                    StringTokenizer answer = new StringTokenizer(reader.readLine(), "*");
+                    String amountTransaction = answer.nextToken();
+
+                    for (int i = 0; i < Integer.parseInt(amountTransaction); i++) {
+                        StringTokenizer newAnswer = new StringTokenizer(reader.readLine(), "*");
+                        String destination = newAnswer.nextToken();
+                        String amount = newAnswer.nextToken();
+                        transaction = transaction + "از" + destination + "به مقدار" + amount + "\n";
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 homePage.getChildren().add(transaction());
             }
         });
@@ -382,7 +568,19 @@ public class Client extends Application {
         bInventory.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-//                writer.println("7");
+                try {
+                    writer.println("7");
+                    if (accountType == 1) {
+                        writer.println(accounts.get(checkAccount).getAccountNumber() + "*");
+                    } else if (accountType == 2) {
+                        writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*");
+                    }
+
+                    String answer = reader.readLine();
+                    inventory = answer;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 homePage.getChildren().add(inventory());
             }
         });
@@ -413,7 +611,47 @@ public class Client extends Application {
         bCloseAnAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                homePage.getChildren().add(closeAnAccount());
+                try {
+                    writer.println("13");
+                    if (accountType == 1) {
+                        writer.println(accounts.get(checkAccount).getAccountNumber() + "*");
+                    } else if (accountType == 2) {
+                        writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*");
+                    }
+
+                    String answer = reader.readLine();
+                    if (answer.equals("0")) {
+                        homePage.getChildren().add(closeAnAccount());
+                    } else if (answer.equals("1")) {
+                        Pane newBackgroundPage = new Pane();
+                        newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                        Pane successfulCloseAccount = new Pane();
+                        successfulCloseAccount.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                        TextArea tFSuccessful = new TextArea("افرین وام گرفتی");
+                        tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                        tFSuccessful.editableProperty().asObject().set(false);
+                        tFSuccessful.setText("با موفقیت بستی حسابو");
+
+                        Button bSuccessful = new Button("OK");
+                        bSuccessful.setShape(new Circle(5));
+                        bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                        successfulCloseAccount.getChildren().addAll(tFSuccessful, bSuccessful);
+                        newBackgroundPage.getChildren().add(successfulCloseAccount);
+                        homePage.getChildren().add(newBackgroundPage);
+
+                        bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                            @Override
+                            public void handle(MouseEvent event) {
+                                scene.setRoot(homePage());
+                            }
+                        });
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -427,12 +665,68 @@ public class Client extends Application {
         bLoan.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
+                writer.println("10");
+                if (accountType == 1) {
+                    writer.println(accounts.get(checkAccount).getAccountNumber() + "*");
+                } else if (accountType == 2) {
+                    writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*");
+                }
                 homePage.getChildren().add(loan());
             }
-        });
+        }); // "10"
+
+        bAddInFavoriteAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                try {
+                    writer.println("9");
+                    if (accountType == 1) {
+                        writer.println(accounts.get(checkAccount).getAccountNumber() + "*");
+                    } else if (accountType == 2) {
+                        writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*");
+                    }
+                    countFavoriteAccount++;
+                    favoriteAccounts.put(checkFavoriteAccount, accounts.get(checkAccount));
+
+                    String answer = reader.readLine();
+
+                    Pane backgroundPage = new Pane();
+                    backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                    Pane successfulAddInFavoriteAccount = new Pane();
+                    successfulAddInFavoriteAccount.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                    TextArea tFSuccessful = new TextArea();
+                    tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                    tFSuccessful.editableProperty().asObject().set(false);
+                    if (answer.equals("0")) {
+                        tFSuccessful.setText("حسابت قبلا منتخب بوده");
+                    } else if (answer.equals("1")) {
+                        tFSuccessful.setText("حسابت منتخب شد افرین");
+                    }
+
+                    Button bSuccessful = new Button("OK");
+                    bSuccessful.setShape(new Circle(5));
+                    bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                    bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            scene.setRoot(homePage());
+                        }
+                    });
+
+                    successfulAddInFavoriteAccount.getChildren().addAll(tFSuccessful, bSuccessful);
+                    backgroundPage.getChildren().add(successfulAddInFavoriteAccount);
+                    homePage.getChildren().add(backgroundPage);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }); // "9"
 
         homePage.getChildren().addAll(circle, bUserProfile, bSetting, bAboutUs, bExit,
-                lName, bFavoriteAccount, bAllAccount, rBox, bGoLeft, lInformationAccount, bGoRight,
+                lName, bFavoriteAccount, bAllAccount, rBox, imageLeft, lInformationAccount, imageRight,
                 bTransaction, bInventory, bTransfer, bOpenAnAccount, bCloseAnAccount, bBills, bLoan, bAddInFavoriteAccount);
         return homePage;
 
@@ -444,39 +738,47 @@ public class Client extends Application {
         Pane userProfilePage = new Pane();
         userProfilePage.setStyle("-fx-background-color: #1D3557; -fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570");
 
-        Image image = new Image("file:src/picture/Inkedphoto_2021-06-29_03-11-07_LI.jpg");
-        ImageView imageView = new ImageView(image);
-        imageView.setStyle("-fx-translate-x: 19; -fx-translate-y: 171");
-        imageView.fitWidthProperty().set(228);
-        imageView.fitHeightProperty().set(228);
-
         Button bChangeImage = new Button("تعویض عکس");
         bChangeImage.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 38; -fx-translate-y: 456; -fx-background-radius: 15px; -fx-background-color: " + "#A8DADC; -fx-text-fill: #000000; ");
+
+        Label lName = new Label("name :");
+        lName.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 375; -fx-translate-y: 76; -fx-text-fill: #E63946; ");// x - 5
 
         TextField tfName = new TextField();
         tfName.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 171; -fx-max-width: 171; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 342; -fx-translate-y: 114; -fx-background-radius: 100px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
         tfName.setText(name);
+
+        Label lNationalId = new Label("national ID :");
+        lNationalId.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 584; -fx-translate-y: 76; -fx-text-fill: #E63946; ");// x - 5
 
         TextField tfNationalId = new TextField();
         tfNationalId.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 171; -fx-max-width: 171; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 551; -fx-translate-y: 114; -fx-background-radius: 100px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
         tfNationalId.setText(nationalId);
         tfNationalId.editableProperty().asObject().set(false);
 
+        Label lPassword = new Label("password :");
+        lPassword.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 375; -fx-translate-y: 190; -fx-text-fill: #E63946; ");// x - 5
+
         TextField tfPassword = new TextField();
         tfPassword.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 171; -fx-max-width: 171; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 342; -fx-translate-y: 228; -fx-background-radius: 100px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
         tfPassword.setText(password);
+
+        Label lPhoneNumber = new Label("phoneNumber :");
+        lPhoneNumber.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 584; -fx-translate-y: 190; -fx-text-fill: #E63946; ");// x - 5
 
         TextField tfPhoneNumber = new TextField();
         tfPhoneNumber.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 171; -fx-max-width: 171; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 551; -fx-translate-y: 228; -fx-background-radius: 100px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
         tfPhoneNumber.setText(phoneNumber);
 
+        Label lEmail = new Label("email :");
+        lEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 375; -fx-translate-y: 304; -fx-text-fill: #E63946; ");// x - 5
+
         TextField tfEmail = new TextField();
         tfEmail.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 380; -fx-max-width: 380; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 342; -fx-translate-y: 342; -fx-background-radius: 100px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
         tfEmail.setText(email);
 
-        Button bGoHome = new Button();
-        bGoHome.setShape(new Circle(5));
-        bGoHome.setStyle("-fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 494; -fx-translate-y: 456;");
+        Circle cGoHome = new Circle(532, 494, 38);
+        cGoHome.setFill(new ImagePattern(new Image("file:src/Client/picture/Home76.png")));
 
         Button bSaveChanges = new Button("ذخیره تغییرات");
         bSaveChanges.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 17; -fx-font-weight: bold; -fx-min-width: 114; -fx-max-width: 114; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 608; -fx-translate-y: 456; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
@@ -485,41 +787,44 @@ public class Client extends Application {
             @Override
             public void handle(MouseEvent event) {
 
-                writer.println("3");
-                writer.println(tfName.getText() + "*" + tfPassword.getText() + "*" + tfPhoneNumber.getText() + "*" + tfEmail.getText() + "*");
-                name = tfName.getText() ;
-                password = tfPassword.getText() ;
-                phoneNumber = tfPhoneNumber.getText() ;
-                email = tfEmail.getText() ;
+                if (!tfName.getText().equals("") && !tfPassword.getText().equals("") && !tfPhoneNumber.getText().equals("") && !tfEmail.getText().equals("")) {
 
-                Pane backgroundPage = new Pane();
-                backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+                    writer.println("3");
+                    writer.println(tfName.getText() + "*" + tfPassword.getText() + "*" + tfPhoneNumber.getText() + "*" + tfEmail.getText() + "*");
+                    name = tfName.getText();
+                    password = tfPassword.getText();
+                    phoneNumber = tfPhoneNumber.getText();
+                    email = tfEmail.getText();
 
-                Pane successfulChanges = new Pane();
-                successfulChanges.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+                    Pane newBackgroundPage = new Pane();
+                    newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
-                TextArea tFSuccessful = new TextArea("تغییرات با موفقیت انجام شد");
-                tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                    Pane successfulChanges = new Pane();
+                    successfulChanges.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
 
-                Button bSuccessful = new Button("OK");
-                bSuccessful.setShape(new Circle(5));
-                bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+                    TextArea tFSuccessful = new TextArea("تغییرات با موفقیت انجام شد");
+                    tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                    tFSuccessful.editableProperty().asObject().set(false);
 
-                successfulChanges.getChildren().addAll(tFSuccessful, bSuccessful);
-                backgroundPage.getChildren().add(successfulChanges);
-                userProfilePage.getChildren().add(backgroundPage);
+                    Circle cSuccessful = new Circle(133, 152, 19);
+                    cSuccessful.setFill(new ImagePattern(new Image("file:src/Client/picture/Home38.png")));
 
-                bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                    @Override
-                    public void handle(MouseEvent event) {
-                        scene.setRoot(homePage());
-                    }
-                });
+                    successfulChanges.getChildren().addAll(tFSuccessful, cSuccessful);
+                    newBackgroundPage.getChildren().add(successfulChanges);
+                    userProfilePage.getChildren().add(newBackgroundPage);
 
+                    cSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            scene.setRoot(homePage());
+                        }
+                    });
+
+                }
             }
         });
 
-        bGoHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        cGoHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
                 scene.setRoot(homePage());
@@ -527,8 +832,9 @@ public class Client extends Application {
         });
 
 
-        userProfilePage.getChildren().addAll(imageView, bChangeImage,
-                tfName, tfNationalId, tfPassword, tfPhoneNumber, tfEmail, bGoHome, bSaveChanges);
+        userProfilePage.getChildren().addAll(bChangeImage,
+                lName, tfName, lNationalId, tfNationalId, lPassword, tfPassword, lPhoneNumber, tfPhoneNumber, lEmail, tfEmail,
+                cGoHome, bSaveChanges);
         return userProfilePage;
     }
 
@@ -699,7 +1005,53 @@ public class Client extends Application {
         bTransfer.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                writer.println("6");
+                try {
+                    writer.println("6");
+                    if (accountType == 1) {
+                        writer.println(accounts.get(checkAccount).getAccountNumber() + "*" + tFSourceAccountNumber.getText() + "*" + tFTransferAmount.getText() + "*" + tFAccountPassword.getText() + "*");
+                    } else if (accountType == 2) {
+                        writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*" + tFSourceAccountNumber.getText() + "*" + tFTransferAmount.getText() + "*" + tFAccountPassword.getText() + "*");
+                    }
+                    String answer = reader.readLine();
+
+                    Pane backgroundPage = new Pane();
+                    backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                    Pane successfulTransfer = new Pane();
+                    successfulTransfer.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 133; -fx-translate-y: 95");
+
+                    TextArea tFSuccessful = new TextArea();
+                    tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+
+                    Button bSuccessful = new Button("OK");
+                    bSuccessful.setShape(new Circle(5));
+                    bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                    bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent event) {
+                            scene.setRoot(homePage());
+                        }
+                    });
+
+                    if (answer.equals("0")) {
+                        tFSuccessful.setText("رمز غلطه");
+                    } else if (answer.equals("1")) {
+                        tFSuccessful.setText("موجودی ناکافی");
+                    } else if (answer.equals("2")) {
+                        tFSuccessful.setText("شماره مقصد غلط");
+                    } else if (answer.equals("3")) {
+                        tFSuccessful.setText("موفقست امیز");
+                    }
+
+                    successfulTransfer.getChildren().addAll(tFSuccessful, bSuccessful);
+                    backgroundPage.getChildren().add(successfulTransfer);
+                    transferPage.getChildren().add(backgroundPage);
+
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         });
 
@@ -715,7 +1067,8 @@ public class Client extends Application {
         Pane inventoryPage = new Pane();
         inventoryPage.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
 
-        Label lInventory = new Label("موجودی قابل برداشت");
+        Label lInventory = new Label("موجودی قابل برداشت" + "\n" +
+                inventory);
         lInventory.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 17; -fx-font-weight: bold; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 0; -fx-translate-y: 0; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
 
         Button bGoHome = new Button();
@@ -741,12 +1094,14 @@ public class Client extends Application {
         Pane transactionPage = new Pane();
         transactionPage.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 532; -fx-max-width: 532; -fx-min-height: 456; -fx-max-height: 456; -fx-translate-x: 133; -fx-translate-y: 57");
 
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setStyle("-fx-background-color: #1D3557; -fx-min-width: 494; -fx-max-width: 494; -fx-min-height: 342; -fx-max-height: 342; -fx-translate-x: 19; -fx-translate-y: 19");
+        TextArea textArea = new TextArea();
+        textArea.setText(transaction);
+        textArea.setStyle(" -fx-min-width: 494; -fx-max-width: 494; -fx-min-height: 342; -fx-max-height: 342; -fx-translate-x: 19; -fx-translate-y: 19");
+        textArea.editableProperty().asObject().set(false);
 
         Button bGoHome = new Button();
         bGoHome.setShape(new Circle(5));
-        bGoHome.setStyle("-fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 228; -fx-translate-y: 370.5;");
+        bGoHome.setStyle("-fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 247; -fx-translate-y: 380;");
 
         bGoHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -755,20 +1110,36 @@ public class Client extends Application {
             }
         });
 
-        transactionPage.getChildren().addAll(scrollPane, bGoHome);
+        transactionPage.getChildren().addAll(textArea, bGoHome);
         backgroundPage.getChildren().add(transactionPage);
         return backgroundPage;
     }
 
     private Pane loan() {
+        try {
+            StringTokenizer answer = new StringTokenizer(reader.readLine(), "*");
+            String amountOfLoan = answer.nextToken();
+            for (int i = 0; i < Integer.parseInt(amountOfLoan); i++) {
+                StringTokenizer newAnswer = new StringTokenizer(reader.readLine(), "*");
+                String amount = newAnswer.nextToken();
+                String time = newAnswer.nextToken();
+                loan = loan + amount + "ریال" + time + "ماه" + "\n";
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         Pane backgroundPage = new Pane();
         backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
         Pane loanPage = new Pane();
         loanPage.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 532; -fx-max-width: 532; -fx-min-height: 570; -fx-max-height: 570; -fx-translate-x: 133; -fx-translate-y: 0");
 
-        ScrollPane scrollPane = new ScrollPane();
-        scrollPane.setStyle("-fx-background-color: #1D3557; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 570; -fx-max-height: 570; -fx-translate-x: 0; -fx-translate-y: 0");
+        TextArea textArea = new TextArea();
+        textArea.setStyle("-fx-background-color: #1D3557; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 570; -fx-max-height: 570; -fx-translate-x: 0; -fx-translate-y: 0");
+        textArea.setText(loan);
+        textArea.editableProperty().asObject().set(false);
 
         TextField tFAmount = new TextField();
         tFAmount.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 22; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 304; -fx-translate-y: 76; -fx-background-radius: 100px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
@@ -788,9 +1159,32 @@ public class Client extends Application {
         bGetLoan.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (1 == 1) {
-                    scene.setRoot(homePage());
-                }
+                writer.println("11");
+                writer.println(accounts.get(checkAccount).getAccountNumber() + "*" + tFAmount.getText() + "*" + tFTime.getText() + "*");
+
+                Pane newBackgroundPage = new Pane();
+                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                Pane successfulGetLoan = new Pane();
+                successfulGetLoan.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                TextArea tFSuccessful = new TextArea("افرین وام گرفتی");
+                tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+
+                Button bSuccessful = new Button("OK");
+                bSuccessful.setShape(new Circle(5));
+                bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                successfulGetLoan.getChildren().addAll(tFSuccessful, bSuccessful);
+                newBackgroundPage.getChildren().add(successfulGetLoan);
+                backgroundPage.getChildren().add(newBackgroundPage);
+
+                bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        scene.setRoot(homePage());
+                    }
+                });
             }
         });
 
@@ -801,7 +1195,7 @@ public class Client extends Application {
             }
         });
 
-        loanPage.getChildren().addAll(scrollPane, tFAmount, tFTime, bGetLoan, bGoHome);
+        loanPage.getChildren().addAll(textArea, tFAmount, tFTime, bGetLoan, bGoHome);
         backgroundPage.getChildren().add(loanPage);
         return backgroundPage;
     }
@@ -835,9 +1229,48 @@ public class Client extends Application {
         bPayingBill.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (1 == 1) {
-                    scene.setRoot(homePage());
+                writer.println("12");
+                if (accountType == 1) {
+                    writer.println(accounts.get(checkAccount).getAccountNumber() + "*" + tFAmount.getText() + "*");
+                } else if (accountType == 2) {
+                    writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*" + tFAmount.getText() + "*");
                 }
+                String answer = "";
+                try {
+                    answer = reader.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                Pane newBackgroundPage = new Pane();
+                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                Pane successfulPayBill = new Pane();
+                successfulPayBill.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                TextArea tFSuccessful = new TextArea("افرین وام گرفتی");
+                tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                tFSuccessful.editableProperty().asObject().set(false);
+                if (answer.equals("0")) {
+                    tFSuccessful.setText("موجودی کمه");
+                } else if (answer.equals("1")) {
+                    tFSuccessful.setText("قبض رو با موفقیت دادی");
+                }
+
+                Button bSuccessful = new Button("OK");
+                bSuccessful.setShape(new Circle(5));
+                bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                successfulPayBill.getChildren().addAll(tFSuccessful, bSuccessful);
+                newBackgroundPage.getChildren().add(successfulPayBill);
+                backgroundPage.getChildren().add(newBackgroundPage);
+
+                bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        scene.setRoot(homePage());
+                    }
+                });
             }
         });
 
@@ -854,6 +1287,7 @@ public class Client extends Application {
     }
 
     private Pane closeAnAccount() {
+
         Pane backgroundPage = new Pane();
         backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
@@ -879,9 +1313,51 @@ public class Client extends Application {
         bCloseAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (1 == 1) {
-                    scene.setRoot(homePage());
+                String answer = "" ;
+                try {
+                    writer.println("14");
+                    if (accountType == 1) {
+                        writer.println(accounts.get(checkAccount).getAccountNumber() + "*" + tFDestinationAccountNumber.getText() + "*");
+                    } else if (accountType == 2) {
+                        writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*" + tFDestinationAccountNumber.getText() + "*");
+                    }
+
+                    answer = reader.readLine();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
+
+                Pane newBackgroundPage = new Pane();
+                newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                Pane successfulCloseAccount = new Pane();
+                successfulCloseAccount.setStyle("-fx-background-color: #FFDDD2; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                TextArea tFSuccessful = new TextArea("افرین وام گرفتی");
+                tFSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-background-color: #D3EDEE; -fx-prompt-text-fill: #50514F; ");
+                tFSuccessful.editableProperty().asObject().set(false);
+                if (answer.equals("0")) {
+                    tFSuccessful.setText("مشماره مقصد نامعتبره");
+                } else if (answer.equals("1")) {
+                    tFSuccessful.setText("با موفقیت بستیش");
+                    accounts.remove(checkAccount);
+                }
+
+                Button bSuccessful = new Button("OK");
+                bSuccessful.setShape(new Circle(5));
+                bSuccessful.setStyle("-fx-font-family: 'B Nazanin'; -fx-font-size: 15; -fx-font-weight: bold; -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; -fx-background-radius: 15px; -fx-background-color: #A8DADC; -fx-text-fill: #000000; ");
+
+                successfulCloseAccount.getChildren().addAll(tFSuccessful, bSuccessful);
+                newBackgroundPage.getChildren().add(successfulCloseAccount);
+                backgroundPage.getChildren().add(newBackgroundPage);
+
+                bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        scene.setRoot(homePage());
+                    }
+                });
+
             }
         });
 
