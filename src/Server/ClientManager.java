@@ -62,7 +62,7 @@ public class ClientManager implements Runnable {
                             currentUser = Entrance.signUp(name, nationalId, password, phoneNumber, email);
                             writer.println("1");
                         } catch (DuplicateNationalId e) {
-                            writer.println("2");
+                            writer.println("0");
                         }
                         break;
                     }
