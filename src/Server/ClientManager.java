@@ -277,6 +277,7 @@ public class ClientManager implements Runnable {
                     }
                 }
             }
+            Information.sendInformation();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

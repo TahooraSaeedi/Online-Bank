@@ -1,7 +1,5 @@
 package Client;
 
-import Server.AccountType;
-
 public class Account {
     private String accountNumber;
     private final AccountType accountType;
