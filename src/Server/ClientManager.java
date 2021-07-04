@@ -62,12 +62,13 @@ public class ClientManager implements Runnable {
                         String phoneNumber = x.nextToken();
                         String email = x.nextToken();
                         try {
-                            currentUser = Entrance.signUp(name, nationalId, password, phoneNumber, email);
+                            User now = Entrance.signUp(name, nationalId, password, phoneNumber, email);
                             int code = (int) (Math.random() * 1000) + 1;
                             Entrance.sendEmail(email, code);
                             writer.println("1");
                             String newCode = reader.readLine();
                             if (code != Integer.parseInt(newCode)) throw new InvalidEmailAddressException();
+                            currentUser = now;
                             writer.println("1");
                         } catch (DuplicateNationalId e) {
                             writer.println("0");

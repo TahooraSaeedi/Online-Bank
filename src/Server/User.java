@@ -94,6 +94,12 @@ public class User implements Serializable {
             if (account.getAccountNumber().compareTo(accountNumber) == 0) {
                 if (account.getBalance().compareTo("0") != 0) throw new CloseAccountException();
                 this.accounts.remove(account);
+                for(Account account1 : this.favoriteAccounts){
+                    if(account1.getAccountNumber().compareTo(accountNumber)==0){
+                        this.favoriteAccounts.remove(account1);
+                        break;
+                    }
+                }
                 break;
             }
         }
