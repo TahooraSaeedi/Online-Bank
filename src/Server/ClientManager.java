@@ -284,6 +284,34 @@ public class ClientManager implements Runnable {
                         }
                         break;
                     }
+
+
+                    //**************************************************دکمه ورود ادمین
+                    case 16: {
+                        String adminPassword = reader.readLine();
+                        if (adminPassword.compareTo(Information.adminPassword) == 0) { //رمز ادمین صحیح باشد.
+                            writer.println("1");
+                            writer.println(Information.users.size() + "");
+                            for (User user : Information.users) {
+                                writer.println(user.getName() + "*" + user.getNationalId() + "*");
+                            }
+                            String nationalId = reader.readLine();
+                            boolean found = false;
+                            for (User user : Information.users) {
+                                if (user.getNationalId().compareTo(nationalId) == 0) {
+                                    writer.println("1");
+                                    writer.println(user.getPassword() + "");
+                                    found = true;
+                                    break;
+                                }
+                            }
+                            if (!found) writer.println("0");
+                            //ازینجا به بعدم که خودش میره تو کد یک
+                        } else writer.println("0"); //رمز ادمین صحیح نباشد.
+                        break;
+                    }
+
+
                 }
             }
             Information.sendInformation();
