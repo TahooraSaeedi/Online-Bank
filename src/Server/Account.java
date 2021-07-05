@@ -1,5 +1,7 @@
 package Server;
 
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -11,6 +13,7 @@ public class Account implements Serializable {
     private String balance;
     private ArrayList<Transaction> transactions;
     private ArrayList<Loan> loans;
+    private transient Lock lock;
 
     public Account(AccountType accountType, String password) {
         this.accountNumber = "";
@@ -20,6 +23,7 @@ public class Account implements Serializable {
         this.balance = "0";
         this.transactions = new ArrayList<Transaction>();
         this.loans = new ArrayList<Loan>();
+        this.lock = new ReentrantLock(true);
     }
 
     //********************
@@ -64,6 +68,10 @@ public class Account implements Serializable {
         return loans;
     }
 
+    public void setLock(Lock lock) {
+        this.lock = lock;
+    }
+
     //********************
 
     public void getLoan(String amount, int month) {
@@ -72,7 +80,8 @@ public class Account implements Serializable {
     }
 
     public void payLoan() {
-        if (this.getLoans() != null) {
+        lock.lock();
+        if (this.getLoans().size() != 0) {
             for (Loan loan : this.getLoans()) {
                 int time = (int) ((System.currentTimeMillis() - loan.getTime()) / (2592000000L));
                 String toPay = MyMath.findMultiply(loan.getEachMonth(), (time + ""));
@@ -83,18 +92,22 @@ public class Account implements Serializable {
                 }
             }
         }
+        lock.unlock();
     }
 
     public void payBill(String amount) throws InsufficientFundsException {
+        lock.lock();
         String newBalance = MyMath.findDiff(this.getBalance(), amount);
         if (newBalance.charAt(0) == '-') throw new InsufficientFundsException();
         else {
             this.setBalance(newBalance);
             this.transactions.add(new Transaction(this.getAccountNumber(), "Bill", amount));
         }
+        lock.unlock();
     }
 
     public void moneyTransfer(String destination, String amount, String password) throws Exception {
+        lock.lock();
         if (this.getPassword().compareTo(password) != 0) throw new InvalidPasswordException();
         boolean found = false;
         Account destinationAccount = null;
@@ -116,6 +129,7 @@ public class Account implements Serializable {
                 destinationAccount.transactions.add(new Transaction(this.getAccountNumber(), destination, amount));
             }
         }
+        lock.unlock();
     }
 
 }

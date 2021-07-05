@@ -1,5 +1,7 @@
 package Server;
 
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.concurrent.locks.Lock;
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -13,6 +15,7 @@ public class User implements Serializable {
     private String photo;
     private ArrayList<Account> accounts;
     private ArrayList<Account> favoriteAccounts;
+    private transient Lock lock;
 
     public User(String name, String nationalId, String password, String phoneNumber, String email) {
         this.name = name;
@@ -23,6 +26,7 @@ public class User implements Serializable {
         this.photo = "Profile.PNG";
         this.accounts = new ArrayList<Account>();
         this.favoriteAccounts = new ArrayList<Account>();
+        this.lock = new ReentrantLock(true);
     }
 
     //********************
@@ -80,6 +84,10 @@ public class User implements Serializable {
         return favoriteAccounts;
     }
 
+    public void setLock(Lock lock) {
+        this.lock = lock;
+    }
+
     //********************
 
     public Account addAccount(AccountType accountType, String password) {
@@ -90,12 +98,13 @@ public class User implements Serializable {
     }
 
     public void closeAccount(String accountNumber) throws CloseAccountException {
+        lock.lock();
         for (Account account : this.accounts) {
             if (account.getAccountNumber().compareTo(accountNumber) == 0) {
-                if (account.getBalance().compareTo("0") != 0) throw new CloseAccountException();
+                if (account.getBalance().charAt(0) != '0') throw new CloseAccountException();
                 this.accounts.remove(account);
-                for(Account account1 : this.favoriteAccounts){
-                    if(account1.getAccountNumber().compareTo(accountNumber)==0){
+                for (Account account1 : this.favoriteAccounts) {
+                    if (account1.getAccountNumber().compareTo(accountNumber) == 0) {
                         this.favoriteAccounts.remove(account1);
                         break;
                     }
@@ -103,9 +112,11 @@ public class User implements Serializable {
                 break;
             }
         }
+        lock.unlock();
     }
 
     public void addFavoriteAccount(String accountNumber) throws DuplicateAccountNumberException {
+        lock.lock();
         for (Account account : this.favoriteAccounts) {
             if (account.getAccountNumber().compareTo(accountNumber) == 0) throw new DuplicateAccountNumberException();
         }
@@ -115,6 +126,7 @@ public class User implements Serializable {
                 break;
             }
         }
+        lock.unlock();
     }
 
 }

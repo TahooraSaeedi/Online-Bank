@@ -1,5 +1,6 @@
 package Server;
 
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.ArrayList;
 import java.io.*;
 
@@ -14,6 +15,12 @@ public abstract class Information {
             accounts = (ArrayList<Account>) x.readObject();
         } catch (IOException | ClassNotFoundException e) {
             e.printStackTrace();
+        }
+        for (User user : Information.users) {
+            user.setLock(new ReentrantLock(true));
+        }
+        for (Account account : Information.accounts) {
+            account.setLock(new ReentrantLock(true));
         }
     }
 

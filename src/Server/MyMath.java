@@ -27,7 +27,13 @@ public abstract class MyMath {
         if (carry > 0)
             str += (char) (carry + '0');
         str = new StringBuilder(str).reverse().toString();
-        return str;
+
+        for (int i = 0; i < str.length(); i++) {
+            if (str.charAt(i) != '0') return str.substring(i);
+            else break;
+        }
+
+        return "0";
     }
 
     public static String findDiff(String str1, String str2) {
@@ -65,7 +71,13 @@ public abstract class MyMath {
             str += (char) (sub + '0');
         }
         if (sign == "-") str += sign;
-        return new StringBuilder(str).reverse().toString();
+        String result = new StringBuilder(str).reverse().toString();
+        for (int i = 0; i < result.length(); i++) {
+            if (result.charAt(i) != '0') {
+                return result.substring(i);
+            }
+        }
+        return "0";
     }
 
     private static boolean isSmaller(String str1, String str2) {
@@ -96,7 +108,7 @@ public abstract class MyMath {
                 return result.substring(i);
             }
         }
-        return "";
+        return "0";
     }
 
     static String findMultiply(String num1, String num2) {
@@ -125,7 +137,10 @@ public abstract class MyMath {
         if (i == -1) return "0";
         String s = "";
         while (i >= 0) s += (result[i--]);
-        return s;
+        for (int j = 0; j < s.length(); j++) {
+            if (s.charAt(j) != '0') return s.substring(j);
+        }
+        return "0";
     }
 
 }

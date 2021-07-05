@@ -1,6 +1,8 @@
 package Server;
 
-public class Transaction {
+import java.io.Serializable;
+
+public class Transaction implements Serializable {
     private final String originAccountNumber;
     private final String destinationAccountNumber;
     private final String amount;
@@ -9,6 +11,10 @@ public class Transaction {
         this.originAccountNumber = originAccountNumber;
         this.destinationAccountNumber = destinationAccountNumber;
         this.amount = amount;
+    }
+
+    public String getOriginAccountNumber() {
+        return originAccountNumber;
     }
 
     public String getDestinationAccountNumber() {
