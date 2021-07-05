@@ -1,8 +1,8 @@
 package Server;
 
-import java.io.*;
-import java.net.Socket;
 import java.util.StringTokenizer;
+import java.net.Socket;
+import java.io.*;
 
 public class ClientManager implements Runnable {
     private final Server server;
@@ -69,8 +69,9 @@ public class ClientManager implements Runnable {
                             String newCode = reader.readLine();
                             if (code != Integer.parseInt(newCode)) throw new InvalidEmailAddressException();
                             currentUser = now;
+                            Information.users.add(currentUser);
                             writer.println("1");
-                        } catch (DuplicateNationalId e) {
+                        } catch (DuplicateNationalIdException e) {
                             writer.println("0");
                         } catch (InvalidEmailAddressException e) {
                             writer.println("-1");
@@ -95,7 +96,9 @@ public class ClientManager implements Runnable {
 
                     //**************************************************دکمه افتتاح حساب
                     case 4: {
-                        writer.println("6062-5611-5525-" + (1000 + Information.accounts.size()));
+                        String number = Information.accounts.get(Information.accounts.size() - 1).getAccountNumber().substring(10);
+                        int num = Integer.parseInt(number);
+                        writer.println("6062-5525-" + (num + 1));
                         break;
                     }
 
@@ -164,7 +167,7 @@ public class ClientManager implements Runnable {
                             if (account.getAccountNumber().compareTo(accountNumber) == 0) {
                                 writer.println(account.getTransactions().size() + "*");
                                 for (Transaction transaction : account.getTransactions()) {
-                                    writer.println(transaction.getDestinationAccountNumber() + "*" + transaction.getAmount() + "*");
+                                    writer.println(transaction.getOriginAccountNumber() + "*" + transaction.getDestinationAccountNumber() + "*" + transaction.getAmount() + "*");
                                 }
                                 break;
                             }
@@ -256,10 +259,14 @@ public class ClientManager implements Runnable {
 
                     //**************************************************دکمه بستن حساب در حالتی که حساب دارای موجودی است
                     case 14: {
-                        x = new StringTokenizer(reader.readLine(), "*");
-                        String accountNumber = x.nextToken();
-                        String destination = x.nextToken();
-                        boolean found = false;
+                        String accountNumber = reader.readLine();
+                        for (Account account : currentUser.getAccounts()) {
+                            if (account.getAccountNumber().compareTo(accountNumber) == 0) {
+                                writer.println(account.getBalance());
+                                break;
+                            }
+                        }
+                        String destination = reader.readLine();
                         for (Account account : currentUser.getAccounts()) {
                             if (account.getAccountNumber().compareTo(accountNumber) == 0) {
                                 try {

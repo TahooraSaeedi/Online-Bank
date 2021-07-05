@@ -1,21 +1,20 @@
 package Server;
 
-import java.util.Properties;
-import javax.mail.*;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.util.Properties;
+import javax.mail.*;
 
 public abstract class Entrance {
 
-    public static User signUp(String name, String nationalId, String password, String phoneNumber, String email) throws DuplicateNationalId {
+    public static User signUp(String name, String nationalId, String password, String phoneNumber, String email) throws DuplicateNationalIdException, InvalidEmailAddressException {
         User currentUser = null;
         for (User user : Information.users) {
             if (user.getNationalId().compareTo(nationalId) == 0) {
-                throw new DuplicateNationalId();
+                throw new DuplicateNationalIdException();
             }
         }
         currentUser = new User(name, nationalId, password, phoneNumber, email);
-        Information.users.add(currentUser);
         return currentUser;
     }
 
@@ -30,8 +29,10 @@ public abstract class Entrance {
             }
         }
         if (!found) throw new UserNotFoundException();
-        for (Account account : currentUser.getAccounts()) {
-            account.payLoan();
+        if (currentUser.getAccounts() != null) {
+            for (Account account : currentUser.getAccounts()) {
+                account.payLoan();
+            }
         }
         return currentUser;
     }

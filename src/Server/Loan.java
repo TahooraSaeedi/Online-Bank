@@ -1,14 +1,16 @@
 package Server;
 
-public class Loan {
+import java.io.Serializable;
+
+public class Loan implements Serializable {
     private final String amount;
-    private final int months;
+    private int months = 6;
     private final String eachMonth;
     private long time;
 
     public Loan(String amount, int months) {
         this.amount = amount;
-        this.months = months;
+        if (months > 0) this.months = months;
         this.eachMonth = MyMath.findDivision(amount, months);
         this.time = System.currentTimeMillis();
     }
