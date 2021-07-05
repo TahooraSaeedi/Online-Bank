@@ -7,7 +7,7 @@ import javax.mail.*;
 
 public abstract class Entrance {
 
-    public static User signUp(String name, String nationalId, String password, String phoneNumber, String email) throws DuplicateNationalIdException, InvalidEmailAddressException {
+    public static User signUp(String name, String nationalId, String password, String phoneNumber, String email) throws DuplicateNationalIdException {
         User currentUser = null;
         for (User user : Information.users) {
             if (user.getNationalId().compareTo(nationalId) == 0) {
@@ -59,7 +59,6 @@ public abstract class Entrance {
             message.setSubject(sub);
             message.setText(msg);
             Transport.send(message);
-            System.out.println("message sent successfully");
         } catch (MessagingException e) {
             throw new InvalidEmailAddressException();
         }

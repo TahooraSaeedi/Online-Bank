@@ -28,6 +28,7 @@ public abstract class MyMath {
             str += (char) (carry + '0');
         str = new StringBuilder(str).reverse().toString();
 
+        //حذف صفر های اول رشته
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) != '0') return str.substring(i);
             else break;

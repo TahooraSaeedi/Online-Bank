@@ -1,30 +1,28 @@
 package Client;
 
-import javafx.application.Application;
-import javafx.event.EventHandler;
-import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
-import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
-import javafx.scene.shape.Circle;
+import javafx.application.Application;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.shape.Rectangle;
-import javafx.stage.Stage;
-
-import java.io.*;
-import java.net.Socket;
-import java.util.HashMap;
+import javafx.scene.image.ImageView;
 import java.util.StringTokenizer;
+import javafx.event.EventHandler;
+import javafx.scene.shape.Circle;
+import javafx.scene.image.Image;
+import javafx.scene.layout.Pane;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
+import javafx.scene.Scene;
+import java.util.HashMap;
+import java.net.Socket;
+import java.io.*;
 
 public class Client extends Application {
     Scene scene;
 
     Socket server;
     int port = 16999;
-    String serverAddress = "Localhost";
+    String serverAddress = "151.245.40.218";
 
     InputStream fromServer;
     OutputStream toServer;
@@ -43,7 +41,7 @@ public class Client extends Application {
     private final String namePattern = "[a-zA-Z]*";
     private final String accountPattern = "[0-9-]*";
     private final String phoneNumberPattern = "[0-9]{11}";
-    private final String emailPattern = "[a-zA-Z._'0-9-]*[@]{1}[a-zA-Z._'0-9-]*.com";
+    private final String emailPattern = "[a-zA-Z._'0-9-]*[@]{1}[a-zA-Z]*.com";
 
     HashMap<Integer, Account> accounts = new HashMap<Integer, Account>();
     int countAccount = 0; // تعداد حساب ها
@@ -51,7 +49,7 @@ public class Client extends Application {
 
     HashMap<Integer, Account> favoriteAccounts = new HashMap<Integer, Account>();
     int countFavoriteAccount = 0; // تعداد حساب ها
-    int checkFavoriteAccount = 0; // جا به جا شدن روی حساب خا
+    int checkFavoriteAccount = 1; // جا به جا شدن روی حساب خا
 
     int accountType = 1; // 1 == accounts  &&  2 == favoriteAccounts
 
@@ -73,7 +71,7 @@ public class Client extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        scene = new Scene(entrance(), 798, 570, Color.web("646464FF"));
+        scene = new Scene(entrance(), 798, 570);
 
         primaryStage.getIcons().add(new Image("file:src/Client/picture/icon.png"));
         primaryStage.setResizable(false);
@@ -139,9 +137,7 @@ public class Client extends Application {
                                 phoneNumber = check.nextToken();
                                 email = check.nextToken();
                                 numOfAccount = check.nextToken();
-                                countAccount = Integer.parseInt(numOfAccount);
                                 numOfFavoriteAccount = check.nextToken();
-                                countFavoriteAccount = Integer.parseInt(numOfFavoriteAccount);
 
                                 for (int i = 1; i <= Integer.parseInt(numOfAccount); i++) {
                                     StringTokenizer saveInformation = new StringTokenizer(reader.readLine(), "*");
@@ -258,12 +254,6 @@ public class Client extends Application {
 
                             String answer = reader.readLine();
                             if (answer.equals("1")) {
-
-                                /*nationalId = tFNationalId.getText();
-                                name = tFName.getText();
-                                password = tFPassword.getText();
-                                phoneNumber = tFPhoneNumber.getText();
-                                email = tFEmail.getText();*/
 
                                 Pane newBackgroundPage = new Pane();
                                 newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
@@ -524,100 +514,6 @@ public class Client extends Application {
 
     }
 
-    private Pane showAccounts() {
-        Pane showAccountsPage = new Pane();
-        showAccountsPage.setStyle("-fx-background-color: " + Theme.back3 + "; -fx-min-width: 456; -fx-max-width: 456; -fx-min-height: 228; -fx-max-height: 228; -fx-translate-x: 304; -fx-translate-y: 152");
-
-        Button bFavoriteAccount = new Button("Favorite accounts");
-        bFavoriteAccount.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 38; -fx-translate-y: -39; -fx-background-radius: 100px 100px 0px 0px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        Button bAllAccount = new Button("All accounts");
-        bAllAccount.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 266; -fx-translate-y: -39; -fx-background-radius: 100px 100px 0px 0px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        Circle imageLeft = new Circle(38, 114, 19);
-        imageLeft.setFill(new ImagePattern(new Image("file:src/Client/picture/Left.png")));
-
-        Label lInformationAccount = new Label();// اطلاعات از هش مپ حساب ها خوانده میشود
-
-        if (accountType == 1) {
-            if (countAccount != 0) {
-                lInformationAccount.setText(accounts.get(checkAccount).getAlias() + "\n" +
-                        accounts.get(checkAccount).getAccountType() + "\n" +
-                        accounts.get(checkAccount).getAccountNumber());
-            } else {
-                lInformationAccount.setText("");
-            }
-        } else if (accountType == 2) {
-            if (countFavoriteAccount != 0) {
-                lInformationAccount.setText(favoriteAccounts.get(checkFavoriteAccount).getAlias() + "\n" +
-                        favoriteAccounts.get(checkFavoriteAccount).getAccountType() + "\n" +
-                        favoriteAccounts.get(checkFavoriteAccount).getAccountNumber());
-            } else {
-                lInformationAccount.setText("");
-            }
-        }
-
-        lInformationAccount.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 25; -fx-font-weight: bold;  -fx-min-width: 304; -fx-max-width: 304; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 76; -fx-translate-y: 38; -fx-background-radius: 15px; -fx-background-color: " + "#FFFFFF; -fx-text-fill: #000000; ");
-
-        Circle imageRight = new Circle(418, 114, 19);
-        imageRight.setFill(new ImagePattern(new Image("file:src/Client/picture/Right.png")));
-
-        bFavoriteAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                accountType = 2;
-                checkFavoriteAccount = 1;
-                scene.setRoot(homePage());
-            }
-        });
-
-        bAllAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                accountType = 1;
-                checkAccount = 1;
-                scene.setRoot(homePage());
-            }
-        });
-
-        imageLeft.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (accountType == 1) {
-                    if (checkAccount > 1) {
-                        checkAccount--;
-                        scene.setRoot(homePage());
-                    }
-                } else if (accountType == 2) {
-                    if (checkFavoriteAccount > 1) {
-                        checkFavoriteAccount--;
-                        scene.setRoot(homePage());
-                    }
-                }
-            }
-        });
-
-        imageRight.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if (accountType == 1) {
-                    if (checkAccount < countAccount) {
-                        checkAccount++;
-                        scene.setRoot(homePage());
-                    }
-                } else if (accountType == 2) {
-                    if (checkFavoriteAccount < countFavoriteAccount) {
-                        checkFavoriteAccount++;
-                        scene.setRoot(homePage());
-                    }
-                }
-            }
-        });
-
-        showAccountsPage.getChildren().addAll(bFavoriteAccount, bAllAccount, imageLeft, lInformationAccount, imageRight);
-        return showAccountsPage;
-    }
-
     private Pane userProfile() {
         Pane userProfilePage = new Pane();
         userProfilePage.setStyle("-fx-background-image: url(\"file:src/Client/picture/back" + Theme.theme + ".png\"); -fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570");
@@ -726,6 +622,265 @@ public class Client extends Application {
                 lName, tfName, lNationalId, tfNationalId, lPassword, tfPassword, lPhoneNumber, tfPhoneNumber, lEmail, tfEmail,
                 bGoHome, bSaveChanges);
         return userProfilePage;
+    }
+
+    private Pane setting() {
+        Pane newBackgroundPage = new Pane();
+        newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+        Pane setting = new Pane();
+        setting.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+        Label lSetting = new Label("Choose your theme");
+        lSetting.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 47.5; -fx-max-height: 47.5; -fx-translate-x: 0; -fx-translate-y: 0; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center");
+
+        Button themeDefault = new Button("Default");
+        themeDefault.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 45; -fx-max-height: 45; -fx-translate-x: 2; -fx-translate-y: 47.5; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        Button themeDark = new Button("Dark");
+        themeDark.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 45; -fx-max-height: 45; -fx-translate-x: 2; -fx-translate-y: 95; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        Button themeLight = new Button("Light");
+        themeLight.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 45; -fx-max-height: 45; -fx-translate-x: 2; -fx-translate-y: 142.5; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        themeDefault.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Theme.theme = 1;
+                Theme.changeTheme();
+                scene.setRoot(homePage());
+            }
+        });
+
+        themeDark.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Theme.theme = 2;
+                Theme.changeTheme();
+                scene.setRoot(homePage());
+            }
+        });
+
+        themeLight.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                Theme.theme = 3;
+                Theme.changeTheme();
+                scene.setRoot(homePage());
+            }
+        });
+
+        setting.getChildren().addAll(lSetting, themeDefault, themeDark, themeLight);
+        newBackgroundPage.getChildren().add(setting);
+
+        return newBackgroundPage;
+    }
+
+    private Pane aboutUs() {
+
+
+        Pane pAboutUs = new Pane();
+        //آدرس این بکگراند رو بر مبنای تم چیزش کن لطفا
+        pAboutUs.setStyle("-fx-background-image: url(\"file:src/Client/picture/back" + Theme.theme + ".png\"); -fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+        Label lAboutUs = new Label("About us");
+        lAboutUs.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 150; -fx-font-weight: bold; -fx-translate-x: -66.5; -fx-translate-y: 0; -fx-text-fill: " + Theme.text1 + "; -fx-rotate: -90deg; -fx-max-height: 570; -fx-min-height: 570; -fx-tab-max-width: 133; -fx-min-width: 133; -fx-alignment: center");
+
+        Label lTitle = new Label("You can connect us through following ways\n                  and share your ideas");
+        lTitle.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 35; -fx-font-weight: bold; -fx-translate-x: 266; -fx-translate-y: 38; -fx-text-fill: " + Theme.button2 + "; -fx-rotate: 0; -fx-max-width: 532; -fx-min-width: 532; -fx-alignment: center");
+
+        Label lMhmd = new Label("Mohammadreza Rasi");
+        lMhmd.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-translate-x: 247; -fx-translate-y: 190; -fx-text-fill: " + "#000000" + "; -fx-rotate: 0; -fx-max-width: 266; -fx-min-width: 266; -fx-alignment: center");
+
+        Label lThr = new Label("Tahoora Saeedi");
+        lThr.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-translate-x: 480; -fx-translate-y: 190; -fx-text-fill: " + "#000000" + "; -fx-rotate: 0; -fx-max-width: 266; -fx-min-width: 266; -fx-alignment: center");
+
+        //زحمت آدرس اینم بکش
+        Image iTel = new Image("file:src/Client/picture/tel.png");
+        ImageView ivTel1 = new ImageView(iTel);
+        ivTel1.setStyle("-fx-font-size: 38; -fx-translate-x: 275.5; -fx-translate-y: 266; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
+
+        ImageView ivTel2 = new ImageView(iTel);
+        ivTel2.setStyle("-fx-font-size: 38; -fx-translate-x: 541.5; -fx-translate-y: 266; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
+
+        //و آدرس این
+        Image iInsta = new Image("file:src/Client/picture/insta.png");
+        ImageView ivInsta1 = new ImageView(iInsta);
+        ivInsta1.setStyle("-fx-font-size: 38; -fx-translate-x: 275.5; -fx-translate-y: 342; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
+
+        ImageView ivInsta2 = new ImageView(iInsta);
+        ivInsta2.setStyle("-fx-font-size: 38; -fx-translate-x: 541.5; -fx-translate-y: 342; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
+
+        //و آدرس این یکی
+        Image iEmail = new Image("file:src/Client/picture/email.png");
+        ImageView ivEmail1 = new ImageView(iEmail);
+        ivEmail1.setStyle("-fx-font-size: 38; -fx-translate-x: 275.5; -fx-translate-y: 418; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
+
+        ImageView ivEmail2 = new ImageView(iEmail);
+        ivEmail2.setStyle("-fx-font-size: 38; -fx-translate-x: 541.5; -fx-translate-y: 418; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
+
+        Label lTel = new Label("   @mhmdrzrs                            @ltahooral");
+        lTel.setStyle("-fx-font-size: 30; -fx-translate-x: 300; -fx-translate-y: 266; -fx-font-family: " + Theme.font1 + "; -fx-text-fill: #000000");
+
+        Label lInsta = new Label("   @mhmdrz___rs                         @_ltahooral_");
+        lInsta.setStyle("-fx-font-size: 30; -fx-translate-x: 300; -fx-translate-y: 342; -fx-font-family: " + Theme.font1 + "; -fx-text-fill: #000000");
+
+        Label lEmail = new Label("    mhmdrzrasi@gmail.com                 tahoora.saeedi@gmail.com");
+        lEmail.setStyle("-fx-font-size: 25; -fx-translate-x: 300; -fx-translate-y: 418; -fx-font-family: " + Theme.font1 + "; -fx-text-fill: #000000");
+
+        Button bGoHome = new Button();
+        bGoHome.setShape(new Circle(5));
+        bGoHome.setStyle("-fx-background-image: url(\"file:src/Client/picture/Home76.png\"); -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 494; -fx-translate-y: 465.5; ");
+
+        bGoHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                scene.setRoot(homePage());
+            }
+        });
+
+
+        pAboutUs.getChildren().addAll(lAboutUs, lTitle, lMhmd, lThr, ivTel1, ivTel2, ivInsta1, ivInsta2, ivEmail1, ivEmail2, lTel, lInsta, lEmail, bGoHome);
+        return pAboutUs;
+    }
+
+    private Pane exit() {
+
+        Pane newBackgroundPage = new Pane();
+        newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+        Pane successfulExit = new Pane();
+        successfulExit.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+        Label tFSuccessful = new Label("Do you want to exit?");
+        tFSuccessful.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-text-fill: " + Theme.text1 + ";  -fx-alignment: center ");
+
+        Button bYes = new Button("YES");
+        bYes.setShape(new Circle(5));
+        bYes.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 57; -fx-max-width: 57; -fx-min-height: 57; -fx-max-height: 57; -fx-translate-x: 152; -fx-translate-y: 114; -fx-background-radius: 15px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        Button bNo = new Button("NO");
+        bNo.setShape(new Circle(5));
+        bNo.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 57; -fx-max-width: 57; -fx-min-height: 57; -fx-max-height: 57; -fx-translate-x: 57; -fx-translate-y: 114; -fx-background-radius: 15px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        bYes.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                writer.println("15");
+                try {
+                    writer.close();
+                    reader.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                System.exit(0);
+            }
+        });
+
+        bNo.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                scene.setRoot(homePage());
+            }
+        });
+
+        successfulExit.getChildren().addAll(tFSuccessful, bYes, bNo);
+        newBackgroundPage.getChildren().add(successfulExit);
+        return newBackgroundPage;
+    }
+
+    private Pane showAccounts() {
+        Pane showAccountsPage = new Pane();
+        showAccountsPage.setStyle("-fx-background-color: " + Theme.back3 + "; -fx-min-width: 456; -fx-max-width: 456; -fx-min-height: 228; -fx-max-height: 228; -fx-translate-x: 304; -fx-translate-y: 152");
+
+        Button bFavoriteAccount = new Button("Favorite accounts");
+        bFavoriteAccount.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 38; -fx-translate-y: -39; -fx-background-radius: 100px 100px 0px 0px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        Button bAllAccount = new Button("All accounts");
+        bAllAccount.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 152; -fx-max-width: 152; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 266; -fx-translate-y: -39; -fx-background-radius: 100px 100px 0px 0px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+        Circle imageLeft = new Circle(38, 114, 19);
+        imageLeft.setFill(new ImagePattern(new Image("file:src/Client/picture/Left.png")));
+
+        Label lInformationAccount = new Label();// اطلاعات از هش مپ حساب ها خوانده میشود
+
+        if (accountType == 1) {
+            if (countAccount != 0) {
+                lInformationAccount.setText(accounts.get(checkAccount).getAlias() + "\n" +
+                        accounts.get(checkAccount).getAccountType() + "\n" +
+                        accounts.get(checkAccount).getAccountNumber());
+            } else {
+                lInformationAccount.setText("");
+            }
+        } else if (accountType == 2) {
+            if (countFavoriteAccount != 0) {
+                lInformationAccount.setText(favoriteAccounts.get(checkFavoriteAccount).getAlias() + "\n" +
+                        favoriteAccounts.get(checkFavoriteAccount).getAccountType() + "\n" +
+                        favoriteAccounts.get(checkFavoriteAccount).getAccountNumber());
+            } else {
+                lInformationAccount.setText("");
+            }
+        }
+
+        lInformationAccount.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 25; -fx-font-weight: bold;  -fx-min-width: 304; -fx-max-width: 304; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 76; -fx-translate-y: 38; -fx-background-radius: 15px; -fx-background-color: " + "#FFFFFF; -fx-text-fill: #000000; ");
+
+        Circle imageRight = new Circle(418, 114, 19);
+        imageRight.setFill(new ImagePattern(new Image("file:src/Client/picture/Right.png")));
+
+        bFavoriteAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                accountType = 2;
+                checkFavoriteAccount = 1;
+                scene.setRoot(homePage());
+            }
+        });
+
+        bAllAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                accountType = 1;
+                checkAccount = 1;
+                scene.setRoot(homePage());
+            }
+        });
+
+        imageLeft.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (accountType == 1) {
+                    if (checkAccount > 1) {
+                        checkAccount--;
+                        scene.setRoot(homePage());
+                    }
+                } else if (accountType == 2) {
+                    if (checkFavoriteAccount > 1) {
+                        checkFavoriteAccount--;
+                        scene.setRoot(homePage());
+                    }
+                }
+            }
+        });
+
+        imageRight.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                if (accountType == 1) {
+                    if (checkAccount < countAccount) {
+                        checkAccount++;
+                        scene.setRoot(homePage());
+                    }
+                } else if (accountType == 2) {
+                    if (checkFavoriteAccount < countFavoriteAccount) {
+                        checkFavoriteAccount++;
+                        scene.setRoot(homePage());
+                    }
+                }
+            }
+        });
+
+        showAccountsPage.getChildren().addAll(bFavoriteAccount, bAllAccount, imageLeft, lInformationAccount, imageRight);
+        return showAccountsPage;
     }
 
     private Pane openAnAccount() {
@@ -839,8 +994,7 @@ public class Client extends Application {
         bOpenAnAccount.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                if (!tFPassword.getText().equals("") && !tFAccountNumber.getText().equals("") && !tFSaveAccountType.getText().equals("") && tFPassword.getText().matches(numberPattern) && Integer.parseInt(tFPassword.getText()) > 0) {
-                    System.out.println(tFPassword.getText() + "---" + tFAccountNumber.getText() + "---" + tFSaveAccountType.getText());
+                if (!tFPassword.getText().equals("") && !tFAccountNumber.getText().equals("") && !tFSaveAccountType.getText().equals("") && tFPassword.getText().matches(numberPattern)) {
                     writer.println("5");
                     if (tFAlias.getText().equals("")) {
                         tFAlias.setText("+");
@@ -849,7 +1003,6 @@ public class Client extends Application {
 
                     checkAccount = 1;
                     countAccount++;
-                    System.out.println(countAccount);
                     accounts.put(countAccount, new Account(tFAccountNumber.getText(), AccountType.valueOf(tFSaveAccountType.getText()), tFAlias.getText()));
 
                     Pane backgroundPage = new Pane();
@@ -1108,6 +1261,57 @@ public class Client extends Application {
         }
     }
 
+    private Pane addInFavoriteAccount() {
+        if (countAccount == 0) {
+            return noAccountAvailable();
+        } else {
+            String answer = "";
+            try {
+                writer.println("9");
+                if (accountType == 1) {
+                    writer.println(accounts.get(checkAccount).getAccountNumber() + "*");
+                } else if (accountType == 2) {
+                    writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*");
+                }
+
+                answer = reader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            Pane backgroundPage = new Pane();
+            backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+            Pane successfulAddInFavoriteAccount = new Pane();
+            successfulAddInFavoriteAccount.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+            Label tFSuccessful = new Label();
+            tFSuccessful.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center");
+            if (answer.equals("0")) {
+                tFSuccessful.setText("The account already\n exists in favorite list");
+            } else if (answer.equals("1")) {
+                tFSuccessful.setText("The account added to\n      list of favorites");
+                countFavoriteAccount++;
+                favoriteAccounts.put(countFavoriteAccount, accounts.get(checkAccount));
+            }
+
+            Button bSuccessful = new Button();
+            bSuccessful.setShape(new Circle(5));
+            bSuccessful.setStyle("-fx-background-image: url(\"file:src/Client/picture/Home38.png\"); -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; ");
+
+            bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                @Override
+                public void handle(MouseEvent event) {
+                    scene.setRoot(homePage());
+                }
+            });
+
+            successfulAddInFavoriteAccount.getChildren().addAll(tFSuccessful, bSuccessful);
+            backgroundPage.getChildren().add(successfulAddInFavoriteAccount);
+            return backgroundPage;
+        }
+    }
+
     private Pane loan() {
 
         if (countAccount == 0) {
@@ -1164,7 +1368,7 @@ public class Client extends Application {
             bGetLoan.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    if (!tFAmount.getText().equals("") && !tFTime.getText().equals("") && tFAmount.getText().matches(numberPattern) && tFTime.getText().matches(numberPattern) && Integer.parseInt(tFAmount.getText()) > 0 && Integer.parseInt(tFTime.getText()) > 0) {
+                    if (!tFAmount.getText().equals("") && !tFTime.getText().equals("") && tFAmount.getText().matches(numberPattern) && tFTime.getText().matches(numberPattern) && Integer.parseInt(tFTime.getText()) > 0) {
                         writer.println("11");
                         if (accountType == 1) {
                             writer.println(accounts.get(checkAccount).getAccountNumber() + "*" + tFAmount.getText() + "*" + tFTime.getText() + "*");
@@ -1246,7 +1450,7 @@ public class Client extends Application {
             bPayingBill.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    if (!tFBillId.getText().equals("") && !tFPaymentId.getText().equals("") && !tFAmount.getText().equals("") && tFBillId.getText().matches(numberPattern) && tFPaymentId.getText().matches(numberPattern) && tFAmount.getText().matches(numberPattern) && Integer.parseInt(tFBillId.getText()) > 0 && Integer.parseInt(tFPaymentId.getText()) > 0 && Integer.parseInt(tFAmount.getText()) > 0) {
+                    if (!tFBillId.getText().equals("") && !tFPaymentId.getText().equals("") && !tFAmount.getText().equals("") && tFBillId.getText().matches(numberPattern) && tFPaymentId.getText().matches(numberPattern) && tFAmount.getText().matches(numberPattern) ) {
                         writer.println("12");
                         if (accountType == 1) {
                             writer.println(accounts.get(checkAccount).getAccountNumber() + "*" + tFAmount.getText() + "*");
@@ -1354,7 +1558,9 @@ public class Client extends Application {
                     newBackgroundPage.getChildren().add(successfulCloseAccount);
                     return newBackgroundPage;
 
-                } else { // if answer = "1"
+                } else { // if answer = "0"
+
+                    String balance = reader.readLine();
 
                     Pane backgroundPage = new Pane();// برای خانه
                     backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
@@ -1364,6 +1570,7 @@ public class Client extends Application {
 
                     Label lInventory = new Label();
                     lInventory.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 22; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-text-fill: " + Theme.text2 + "; -fx-alignment: center");
+                    lInventory.setText("Balance" + "\n" + balance);
 
                     TextField tFDestinationAccountNumber = new TextField();
                     tFDestinationAccountNumber.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 190; -fx-max-width: 190; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 38; -fx-translate-y: 190; -fx-background-radius: 100px;-fx-background-color: " + Theme.field + " ; -fx-text-fill: " + Theme.text3 + "; ");
@@ -1381,7 +1588,6 @@ public class Client extends Application {
                         public void handle(MouseEvent event) {
                             if (!tFDestinationAccountNumber.getText().equals("") && tFDestinationAccountNumber.getText().matches(accountPattern)) {
                                 String answer = "";
-                                String balance = "";
                                 try {
                                     writer.println("14");
                                     if (accountType == 1) {
@@ -1390,8 +1596,6 @@ public class Client extends Application {
                                         writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber());
                                     }
 
-                                    balance = reader.readLine();
-
                                     writer.println(tFDestinationAccountNumber.getText());
 
                                     answer = reader.readLine();
@@ -1399,8 +1603,6 @@ public class Client extends Application {
                                 } catch (IOException e) {
                                     e.printStackTrace();
                                 }
-
-                                lInventory.setText("Balance" + "\n" + balance);
 
                                 Pane newBackgroundPage = new Pane();
                                 newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
@@ -1555,58 +1757,6 @@ public class Client extends Application {
 
     }
 
-    private Pane setting() {
-        Pane newBackgroundPage = new Pane();
-        newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
-
-        Pane setting = new Pane();
-        setting.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
-
-        Label lSetting = new Label("Choose your theme");
-        lSetting.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 47.5; -fx-max-height: 47.5; -fx-translate-x: 0; -fx-translate-y: 0; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center");
-
-        Button themeDefault = new Button("Default");
-        themeDefault.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 45; -fx-max-height: 45; -fx-translate-x: 2; -fx-translate-y: 47.5; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        Button themeDark = new Button("Dark");
-        themeDark.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 45; -fx-max-height: 45; -fx-translate-x: 2; -fx-translate-y: 95; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        Button themeLight = new Button("Light");
-        themeLight.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 45; -fx-max-height: 45; -fx-translate-x: 2; -fx-translate-y: 142.5; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        themeDefault.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Theme.theme = 1;
-                Theme.changeTheme();
-                scene.setRoot(homePage());
-            }
-        });
-
-        themeDark.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Theme.theme = 2;
-                Theme.changeTheme();
-                scene.setRoot(homePage());
-            }
-        });
-
-        themeLight.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                Theme.theme = 3;
-                Theme.changeTheme();
-                scene.setRoot(homePage());
-            }
-        });
-
-        setting.getChildren().addAll(lSetting, themeDefault, themeDark, themeLight);
-        newBackgroundPage.getChildren().add(setting);
-
-        return newBackgroundPage;
-    }
-
     private Pane invalidInput1() {
         Pane newBackgroundPage = new Pane();// برای اخطار نداشتن حساب
         //این تیکه رو گفتی نزنم برای بقیه تابعش میکنی
@@ -1661,164 +1811,6 @@ public class Client extends Application {
         newBackgroundPage.getChildren().add(errorInvalidInpute);
         return newBackgroundPage;
 
-    }
-
-    private Pane exit() {
-
-        Pane newBackgroundPage = new Pane();
-        newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
-
-        Pane successfulExit = new Pane();
-        successfulExit.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
-
-        Label tFSuccessful = new Label("Do you want to exit?");
-        tFSuccessful.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-text-fill: " + Theme.text1 + ";  -fx-alignment: center ");
-
-        Button bYes = new Button("YES");
-        bYes.setShape(new Circle(5));
-        bYes.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 57; -fx-max-width: 57; -fx-min-height: 57; -fx-max-height: 57; -fx-translate-x: 152; -fx-translate-y: 114; -fx-background-radius: 15px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        Button bNo = new Button("NO");
-        bNo.setShape(new Circle(5));
-        bNo.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 57; -fx-max-width: 57; -fx-min-height: 57; -fx-max-height: 57; -fx-translate-x: 57; -fx-translate-y: 114; -fx-background-radius: 15px; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
-
-        bYes.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                writer.println("15");
-                System.exit(0);
-            }
-        });
-
-        bNo.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                scene.setRoot(homePage());
-            }
-        });
-
-        successfulExit.getChildren().addAll(tFSuccessful, bYes, bNo);
-        newBackgroundPage.getChildren().add(successfulExit);
-        return newBackgroundPage;
-    }
-
-    private Pane addInFavoriteAccount() {
-        if (countAccount == 0) {
-            return noAccountAvailable();
-        } else {
-            String answer = "";
-            try {
-                writer.println("9");
-                if (accountType == 1) {
-                    writer.println(accounts.get(checkAccount).getAccountNumber() + "*");
-                } else if (accountType == 2) {
-                    writer.println(favoriteAccounts.get(checkFavoriteAccount).getAccountNumber() + "*");
-                }
-
-                answer = reader.readLine();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            Pane backgroundPage = new Pane();
-            backgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
-
-            Pane successfulAddInFavoriteAccount = new Pane();
-            successfulAddInFavoriteAccount.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
-
-            Label tFSuccessful = new Label();
-            tFSuccessful.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 228; -fx-max-width: 228; -fx-min-height: 95; -fx-max-height: 95; -fx-translate-x: 19; -fx-translate-y: 19; -fx-background-radius: 15px; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center");
-            if (answer.equals("0")) {
-                tFSuccessful.setText("The account already\n exists in favorite list");
-            } else if (answer.equals("1")) {
-                tFSuccessful.setText("The account added to\n      list of favorites");
-                countFavoriteAccount++;
-                favoriteAccounts.put(countFavoriteAccount, accounts.get(checkAccount));
-            }
-
-            Button bSuccessful = new Button();
-            bSuccessful.setShape(new Circle(5));
-            bSuccessful.setStyle("-fx-background-image: url(\"file:src/Client/picture/Home38.png\"); -fx-min-width: 38; -fx-max-width: 38; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 114; -fx-translate-y: 133; ");
-
-            bSuccessful.setOnMouseClicked(new EventHandler<MouseEvent>() {
-                @Override
-                public void handle(MouseEvent event) {
-                    scene.setRoot(homePage());
-                }
-            });
-
-            successfulAddInFavoriteAccount.getChildren().addAll(tFSuccessful, bSuccessful);
-            backgroundPage.getChildren().add(successfulAddInFavoriteAccount);
-            return backgroundPage;
-        }
-    }
-
-    private Pane aboutUs() {
-
-
-        Pane pAboutUs = new Pane();
-        //آدرس این بکگراند رو بر مبنای تم چیزش کن لطفا
-        pAboutUs.setStyle("-fx-background-image: url(\"file:src/Client/picture/back" + Theme.theme + ".png\"); -fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
-
-        Label lAboutUs = new Label("About us");
-        lAboutUs.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 150; -fx-font-weight: bold; -fx-translate-x: -66.5; -fx-translate-y: 0; -fx-text-fill: " + Theme.text1 + "; -fx-rotate: -90deg; -fx-max-height: 570; -fx-min-height: 570; -fx-tab-max-width: 133; -fx-min-width: 133; -fx-alignment: center");
-
-        Label lTitle = new Label("You can connect us through following ways\n                  and share your ideas");
-        lTitle.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 35; -fx-font-weight: bold; -fx-translate-x: 266; -fx-translate-y: 38; -fx-text-fill: " + Theme.button2 + "; -fx-rotate: 0; -fx-max-width: 532; -fx-min-width: 532; -fx-alignment: center");
-
-        Label lMhmd = new Label("Mohammadreza Rasi");
-        lMhmd.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-translate-x: 247; -fx-translate-y: 190; -fx-text-fill: " + "#000000" + "; -fx-rotate: 0; -fx-max-width: 266; -fx-min-width: 266; -fx-alignment: center");
-
-        Label lThr = new Label("Tahoora Saeedi");
-        lThr.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-translate-x: 480; -fx-translate-y: 190; -fx-text-fill: " + "#000000" + "; -fx-rotate: 0; -fx-max-width: 266; -fx-min-width: 266; -fx-alignment: center");
-
-        //زحمت آدرس اینم بکش
-        Image iTel = new Image("file:src/Client/picture/tel.png");
-        ImageView ivTel1 = new ImageView(iTel);
-        ivTel1.setStyle("-fx-font-size: 38; -fx-translate-x: 275.5; -fx-translate-y: 266; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
-
-        ImageView ivTel2 = new ImageView(iTel);
-        ivTel2.setStyle("-fx-font-size: 38; -fx-translate-x: 541.5; -fx-translate-y: 266; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
-
-        //و آدرس این
-        Image iInsta = new Image("file:src/Client/picture/insta.png");
-        ImageView ivInsta1 = new ImageView(iInsta);
-        ivInsta1.setStyle("-fx-font-size: 38; -fx-translate-x: 275.5; -fx-translate-y: 342; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
-
-        ImageView ivInsta2 = new ImageView(iInsta);
-        ivInsta2.setStyle("-fx-font-size: 38; -fx-translate-x: 541.5; -fx-translate-y: 342; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
-
-        //و آدرس این یکی
-        Image iEmail = new Image("file:src/Client/picture/email.png");
-        ImageView ivEmail1 = new ImageView(iEmail);
-        ivEmail1.setStyle("-fx-font-size: 38; -fx-translate-x: 275.5; -fx-translate-y: 418; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
-
-        ImageView ivEmail2 = new ImageView(iEmail);
-        ivEmail2.setStyle("-fx-font-size: 38; -fx-translate-x: 541.5; -fx-translate-y: 418; -fx-min-width: 266; -fx-max-width: 266; -fx-alignment: center");
-
-        Label   lTel = new Label("   @mhmdrzrs                            @ltahooral");
-        lTel.setStyle("-fx-font-size: 30; -fx-translate-x: 300; -fx-translate-y: 266; -fx-font-family: "+Theme.font1+"; -fx-text-fill: #000000");
-
-        Label lInsta = new Label("   @mhmdrz___rs                         @_ltahooral_");
-        lInsta.setStyle("-fx-font-size: 30; -fx-translate-x: 300; -fx-translate-y: 342; -fx-font-family: "+Theme.font1+"; -fx-text-fill: #000000");
-
-        Label lEmail = new Label("    mhmdrzrasi@gmail.com                 tahoora.saeedi@gmail.com");
-        lEmail.setStyle("-fx-font-size: 25; -fx-translate-x: 300; -fx-translate-y: 418; -fx-font-family: "+Theme.font1+"; -fx-text-fill: #000000");
-
-        Button bGoHome = new Button();
-        bGoHome.setShape(new Circle(5));
-        bGoHome.setStyle("-fx-background-image: url(\"file:src/Client/picture/Home76.png\"); -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 494; -fx-translate-y: 465.5; ");
-
-        bGoHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                scene.setRoot(homePage());
-            }
-        });
-
-
-        pAboutUs.getChildren().addAll(lAboutUs, lTitle, lMhmd, lThr, ivTel1, ivTel2, ivInsta1, ivInsta2, ivEmail1, ivEmail2, lTel, lInsta, lEmail, bGoHome);
-        return pAboutUs;
     }
 
     public static void main(String[] args) {
