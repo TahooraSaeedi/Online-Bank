@@ -14,16 +14,18 @@ public class Account implements Serializable {
     private ArrayList<Transaction> transactions;
     private ArrayList<Loan> loans;
     private transient Lock lock;
+    private boolean checkLoan;
 
     public Account(AccountType accountType, String password) {
         this.accountNumber = "";
         this.password = password;
         this.accountType = accountType;
-        this.alias = "Personal Account";
+        this.alias = "+";
         this.balance = "0";
         this.transactions = new ArrayList<Transaction>();
         this.loans = new ArrayList<Loan>();
         this.lock = new ReentrantLock(true);
+        this.checkLoan = true;
     }
 
     //********************
@@ -75,8 +77,10 @@ public class Account implements Serializable {
     //********************
 
     public void getLoan(String amount, int month) {
-        this.getLoans().add(new Loan(amount, month));
-        this.setBalance(MyMath.findSum(this.getBalance(), amount));
+        if (checkLoan) {
+            this.getLoans().add(new Loan(amount, month));
+            this.setBalance(MyMath.findSum(this.getBalance(), amount));
+        }
     }
 
     public void payLoan() {
@@ -89,13 +93,14 @@ public class Account implements Serializable {
                     this.setBalance(MyMath.findDiff(this.getBalance(), toPay));
                     this.transactions.add(new Transaction(this.getAccountNumber(), "Loan", toPay));
                     loan.setTime(System.currentTimeMillis());
-                }
+                    this.checkLoan = true;
+                } else this.checkLoan = false;
             }
         }
         lock.unlock();
     }
 
-    public void payBill(String amount) throws InsufficientFundsException {
+    public void payBill(String amount) throws InsufficientFundsException { //موجودی ناکافی
         lock.lock();
         String newBalance = MyMath.findDiff(this.getBalance(), amount);
         if (newBalance.charAt(0) == '-') throw new InsufficientFundsException();
@@ -106,9 +111,9 @@ public class Account implements Serializable {
         lock.unlock();
     }
 
-    public void moneyTransfer(String destination, String amount, String password) throws Exception {
+    public void moneyTransfer(String destination, String amount, String password) throws InvalidPasswordException,InvalidAccountNumberException,InsufficientFundsException {
         lock.lock();
-        if (this.getPassword().compareTo(password) != 0) throw new InvalidPasswordException();
+        if (this.getPassword().compareTo(password) != 0) throw new InvalidPasswordException(); //رمز نامعتبر
         boolean found = false;
         Account destinationAccount = null;
         for (Account account : Information.accounts) {
@@ -118,10 +123,10 @@ public class Account implements Serializable {
                 break;
             }
         }
-        if (!found) throw new InvalidAccountNumberException();
+        if (!found) throw new InvalidAccountNumberException(); // شماره حساب مقصد نامعتبر
         else {
             String newBalance = MyMath.findDiff(this.getBalance(), amount);
-            if (newBalance.charAt(0) == '-') throw new InsufficientFundsException();
+            if (newBalance.charAt(0) == '-') throw new InsufficientFundsException(); // موجودی ناکافی
             else {
                 this.setBalance(newBalance);
                 destinationAccount.setBalance(MyMath.findSum(destinationAccount.getBalance(), amount));

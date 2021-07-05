@@ -1,4 +1,4 @@
-Tahoora{
+Send{
                             //ارسال عکس مخاطب
                             File file = new File(currentUser.getPhoto());
                             FileInputStream FIS = new FileInputStream(file);
@@ -9,7 +9,7 @@ Tahoora{
                             DOS.write(image);
                             //عکس مخاطب ارسال شد
                             //کد سمت کلاینت برای دریافت عکس
-                            DataInputStream DIS = new DataInputStream(client.getInputStream());
+                            DataInputStream DIS = new DataInputStream(server.getInputStream());
                             int number = DIS.readInt();
                             byte[] image = new byte[number];
                             DIS.readFully(image, 0, number);
@@ -19,7 +19,7 @@ Tahoora{
                             Image profilePhoto = new Image("file:Profile");
                             //عکس مخاطب به صورت یک ایمیج  در سمت کلاینت وجود دارد
 }
-MohammadReza{
+Receive{
                         //اگر عکس رو هم عوض کرده باشه، دریافت عکس جدید از کلاینت
                         if (x.hasMoreTokens()) {
                             DataInputStream DIS = new DataInputStream(client.getInputStream());

@@ -38,7 +38,7 @@ public class ClientManager implements Runnable {
                             writer.println("1");
                             writer.println(currentUser.getNationalId() + "*" + currentUser.getName() + "*" + currentUser.getPassword() + "*" + currentUser.getPhoneNumber() + "*" + currentUser.getEmail() + "*" + currentUser.getAccounts().size() + "*" + currentUser.getFavoriteAccounts().size() + "*");
                             //----------------------------------------
-                            //AddPhoto.Tahoora
+                            //AddPhoto.Send
                             //----------------------------------------
                             for (Account account : currentUser.getAccounts()) {
                                 writer.println(account.getAccountNumber() + "*" + account.getAccountType() + "*" + account.getAlias() + "*");
@@ -88,7 +88,7 @@ public class ClientManager implements Runnable {
                         currentUser.setPhoneNumber(x.nextToken());
                         currentUser.setEmail(x.nextToken());
                         //----------------------------------------
-                        //AddPhoto.MohammadReza
+                        //AddPhoto.Receive
                         //----------------------------------------
                         break;
                     }
@@ -96,7 +96,10 @@ public class ClientManager implements Runnable {
 
                     //**************************************************دکمه افتتاح حساب
                     case 4: {
-                        String number = Information.accounts.get(Information.accounts.size() - 1).getAccountNumber().substring(10);
+                        String number;
+                        if (Information.accounts.size() != 0) {
+                            number = Information.accounts.get(Information.accounts.size() - 1).getAccountNumber().substring(10);
+                        } else number = "999";
                         int num = Integer.parseInt(number);
                         writer.println("6062-5525-" + (num + 1));
                         break;
@@ -135,8 +138,6 @@ public class ClientManager implements Runnable {
                                     writer.println("1");
                                 } catch (InsufficientFundsException e) {
                                     writer.println("2");
-                                } catch (Exception ignored) {
-
                                 }
                                 break;
                             }
@@ -252,6 +253,12 @@ public class ClientManager implements Runnable {
                             writer.println("1");
                         } catch (CloseAccountException e) {
                             writer.println("0");
+                            for (Account account : currentUser.getAccounts()) {
+                                if (account.getAccountNumber().compareTo(accountNumber) == 0) {
+                                    writer.println(account.getBalance());
+                                    break;
+                                }
+                            }
                         }
                         break;
                     }
@@ -259,14 +266,8 @@ public class ClientManager implements Runnable {
 
                     //**************************************************دکمه بستن حساب در حالتی که حساب دارای موجودی است
                     case 14: {
-                        String accountNumber = reader.readLine();
-                        for (Account account : currentUser.getAccounts()) {
-                            if (account.getAccountNumber().compareTo(accountNumber) == 0) {
-                                writer.println(account.getBalance());
-                                break;
-                            }
-                        }
-                        String destination = reader.readLine();
+                        String accountNumber = reader.readLine(); //شماره حساب مبدا
+                        String destination = reader.readLine(); //شماره حساب مقصد
                         for (Account account : currentUser.getAccounts()) {
                             if (account.getAccountNumber().compareTo(accountNumber) == 0) {
                                 try {

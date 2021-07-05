@@ -109,6 +109,12 @@ public class User implements Serializable {
                         break;
                     }
                 }
+                for (Account account1 : Information.accounts) {
+                    if (account1.getAccountNumber().compareTo(accountNumber) == 0) {
+                        Information.accounts.remove(account1);
+                        break;
+                    }
+                }
                 break;
             }
         }

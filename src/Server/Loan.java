@@ -10,7 +10,7 @@ public class Loan implements Serializable {
 
     public Loan(String amount, int months) {
         this.amount = amount;
-        if (months > 0) this.months = months;
+        this.months = months;
         this.eachMonth = MyMath.findDivision(amount, months);
         this.time = System.currentTimeMillis();
     }

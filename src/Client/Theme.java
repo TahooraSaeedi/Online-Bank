@@ -1,7 +1,7 @@
 package Client;
 
 public abstract class Theme {
-    public static int theme = 3;
+    public static int theme = 1;
     public static String font1 = "Gabriola";//برای لیبل ها و اکثریت نوشته ها
     public static String font2 = "Arial Rounded MT Bold";//برای قسمت هایی که قراره پر شن و عبارت هایی که شامل عدد هستن
     public static String button1;//بکگراند دکمه های اصلی در صفحه ورودی
