@@ -6,6 +6,7 @@ import java.io.*;
 
 public abstract class Information {
     private static final File file = new File("src/Server/Information");
+    public static String adminPassword = "1111";
     public static ArrayList<User> users = new ArrayList<User>();
     public static ArrayList<Account> accounts = new ArrayList<Account>();
 
