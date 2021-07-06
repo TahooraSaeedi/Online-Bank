@@ -13,7 +13,7 @@ public class Server {
             server = new ServerSocket(port);
             Information.receiveInformation();
             //خالی کردن فایل
-            //Information.sendInformation();
+//            Information.sendInformation();
             Thread FX = new Thread(new ExitButton(args));
             FX.start();
             while (true) {

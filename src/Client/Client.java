@@ -640,7 +640,7 @@ public class Client extends Application {
         newBackgroundPage.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
         Pane setting = new Pane();
-        setting.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+        setting.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 228; -fx-max-height: 228; -fx-translate-x: 266; -fx-translate-y: 171");
 
         Label lSetting = new Label("Choose your theme");
         lSetting.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 25; -fx-font-weight: bold; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 0; -fx-translate-y: 0; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center");
@@ -654,9 +654,11 @@ public class Client extends Application {
         Button themeLight = new Button("Light");
         themeLight.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 36; -fx-max-height: 36; -fx-translate-x: 2; -fx-translate-y: 114; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
 
-        Button admin = new Button("Admin input");
-        admin.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 36; -fx-max-height: 36; -fx-translate-x: 2; -fx-translate-y: 152; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+        Button adminUsers = new Button("Admin (Users)");
+        adminUsers.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 36; -fx-max-height: 36; -fx-translate-x: 2; -fx-translate-y: 152; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
 
+        Button adminAccounts = new Button("Admin (Accounts)");
+        adminAccounts.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 20; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 36; -fx-max-height: 36; -fx-translate-x: 2; -fx-translate-y: 190; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
 
         themeDefault.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
@@ -685,10 +687,10 @@ public class Client extends Application {
             }
         });
 
-        admin.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        adminUsers.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                writer.println("16");
+                writer.println("15");
                 Pane newBackgroundPage2 = new Pane();
                 newBackgroundPage2.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
 
@@ -700,7 +702,7 @@ public class Client extends Application {
                 tFPassword.setPromptText("Password");
 
                 Button bSend = new Button("SEND");
-                bSend.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 38; -fx-translate-y: 114; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+                bSend.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 114; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
 
                 bSend.setOnMouseClicked(new EventHandler<MouseEvent>() {
                     @Override
@@ -720,8 +722,8 @@ public class Client extends Application {
                                     for (int i = 0; i < Integer.parseInt(numberOfUsers); i++) {
                                         StringTokenizer save = new StringTokenizer(reader.readLine(), "*");
                                         String name = save.nextToken();
-                                        String nationId = save.nextToken();
-                                        users = users + name + ": " + nationId + "\n";
+                                        String nationalId = save.nextToken();
+                                        users = users + "Name :" + name + " / National id :" + nationalId + "\n";
                                     }
 
                                     Pane newBackgroundPage3 = new Pane();
@@ -730,8 +732,8 @@ public class Client extends Application {
                                     Pane informationPage = new Pane();
                                     informationPage.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 532; -fx-max-width: 532; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 133; -fx-translate-y: 190");
 
-                                    TextArea information = new TextArea(users);
-                                    information.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 342; -fx-max-width: 342; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 171; -fx-translate-y: 19; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center ");
+                                    TextArea information = new TextArea(users );
+                                    information.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 342; -fx-max-width: 342; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 171; -fx-translate-y: 19; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: #000000; -fx-alignment: center ");
                                     information.editableProperty().asObject().set(false);
 
                                     TextField tFNationId = new TextField();
@@ -739,7 +741,7 @@ public class Client extends Application {
                                     tFNationId.setPromptText("NationID");
 
                                     Button bSendFinal = new Button("SEND");
-                                    bSendFinal.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 57; -fx-max-width: 57; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 38; -fx-translate-y: 114; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+                                    bSendFinal.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 95; -fx-max-width: 95; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 38; -fx-translate-y: 114; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
 
                                     bSendFinal.setOnMouseClicked(new EventHandler<MouseEvent>() {
                                         @Override
@@ -756,6 +758,7 @@ public class Client extends Application {
                                                     writer.println("1");
                                                     writer.println(tFNationId.getText() + "*" + password + "*");
                                                     emptyInformation();
+                                                    String answer = reader.readLine();
                                                     helpEntrance();
                                                 }
                                             } catch (IOException e) {
@@ -783,7 +786,80 @@ public class Client extends Application {
             }
         });
 
-        setting.getChildren().addAll(lSetting, themeDefault, themeDark, themeLight, admin);
+        adminAccounts.setOnMouseClicked(new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent event) {
+                writer.println("16");
+                Pane newBackgroundPage4 = new Pane();
+                newBackgroundPage4.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                Pane checkAdmin1 = new Pane();
+                checkAdmin1.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 266; -fx-max-width: 266; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 266; -fx-translate-y: 190");
+
+                TextField tFPassword = new TextField();
+                tFPassword.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 30; -fx-font-weight: bold; -fx-min-width: 262; -fx-max-width: 262; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 2; -fx-translate-y: 19; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: " + Theme.text1 + "; -fx-alignment: center ");
+                tFPassword.setPromptText("Password");
+
+                Button bSend = new Button("SEND");
+                bSend.setStyle("-fx-font-family: '" + Theme.font1 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 38; -fx-max-height: 38; -fx-translate-x: 95; -fx-translate-y: 114; -fx-background-color: " + Theme.button2 + "; -fx-text-fill: #FFFFFF; ");
+
+                bSend.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent event) {
+                        String answer = "" ;
+                        String numberOfAccounts = "" ;
+                        String saveAccounts = "" ;
+                        writer.println(tFPassword.getText());
+                        try {
+                            answer = reader.readLine();
+                            if (answer.equals("0")){
+                                newBackgroundPage.getChildren().add(invalidInput2());
+                            } else {
+                                numberOfAccounts = reader.readLine();
+                                for (int i = 0; i < Integer.parseInt(numberOfAccounts); i++) {
+                                    StringTokenizer save = new StringTokenizer(reader.readLine(), "*");
+                                    String accountNumber = save.nextToken();
+                                    String accountPassword = save.nextToken();
+                                    saveAccounts = saveAccounts + "accountNumber: " + accountNumber + " / pass: " + accountPassword + "\n";
+                                }
+                                Pane newBackgroundPage5 = new Pane();
+                                newBackgroundPage5.setStyle("-fx-min-width: 798; -fx-max-width: 798; -fx-min-height: 570; -fx-max-height: 570;");
+
+                                Pane informationAccountPage = new Pane();
+                                informationAccountPage.setStyle("-fx-background-color: " + Theme.back1 + "; -fx-min-width: 532; -fx-max-width: 532; -fx-min-height: 190; -fx-max-height: 190; -fx-translate-x: 133; -fx-translate-y: 190");
+
+                                TextArea informationAccount = new TextArea(saveAccounts);
+                                informationAccount.setStyle("-fx-font-family: '" + Theme.font2 + "'; -fx-font-size: 18; -fx-font-weight: bold; -fx-min-width: 399; -fx-max-width: 399; -fx-min-height: 152; -fx-max-height: 152; -fx-translate-x: 114; -fx-translate-y: 19; -fx-background-color: " + Theme.back1 + "; -fx-text-fill: #000000; -fx-alignment: center ");
+                                informationAccount.editableProperty().asObject().set(false);
+
+                                Button bGoHome = new Button();
+                                bGoHome.setShape(new Circle(5));
+                                bGoHome.setStyle("-fx-background-image: url(\"file:src/Client/picture/Home76.png\"); -fx-min-width: 76; -fx-max-width: 76; -fx-min-height: 76; -fx-max-height: 76; -fx-translate-x: 19; -fx-translate-y: 57; ");
+
+                                bGoHome.setOnMouseClicked(new EventHandler<MouseEvent>() {
+                                    @Override
+                                    public void handle(MouseEvent event) {
+                                        scene.setRoot(homePage());
+                                    }
+                                });
+
+                                informationAccountPage.getChildren().addAll(informationAccount, bGoHome);
+                                newBackgroundPage5.getChildren().add(informationAccountPage);
+                                newBackgroundPage.getChildren().add(newBackgroundPage5);
+                            }
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+
+                checkAdmin1.getChildren().addAll(tFPassword, bSend);
+                newBackgroundPage4.getChildren().add(checkAdmin1);
+                newBackgroundPage.getChildren().add(newBackgroundPage4);
+            }
+        });
+
+        setting.getChildren().addAll(lSetting, themeDefault, themeDark, themeLight, adminUsers, adminAccounts);
         newBackgroundPage.getChildren().add(setting);
 
         return newBackgroundPage;
@@ -879,7 +955,7 @@ public class Client extends Application {
         bYes.setOnMouseClicked(new EventHandler<MouseEvent>() {
             @Override
             public void handle(MouseEvent event) {
-                writer.println("15");
+                writer.println("17");
                 try {
                     writer.close();
                     reader.close();

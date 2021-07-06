@@ -23,7 +23,7 @@ public class ClientManager implements Runnable {
             reader = new DataInputStream(client.getInputStream());
             writer = new PrintWriter(client.getOutputStream(), true);
             int command = 0;
-            while (command != 15) {
+            while (command != 17) {
                 command = Integer.parseInt(reader.readLine());
                 switch (command) {
 
@@ -286,8 +286,8 @@ public class ClientManager implements Runnable {
                     }
 
 
-                    //**************************************************دکمه ورود ادمین
-                    case 16: {
+                    //**************************************************دکمه دسترسی ادمین به یوزر ها
+                    case 15: {
                         String adminPassword = reader.readLine();
                         if (adminPassword.compareTo(Information.adminPassword) == 0) { //رمز ادمین صحیح باشد.
                             writer.println("1");
@@ -309,6 +309,19 @@ public class ClientManager implements Runnable {
                             //ازینجا به بعدم که خودش میره تو کد یک
                         } else writer.println("0"); //رمز ادمین صحیح نباشد.
                         break;
+                    }
+
+
+                    //**************************************************دکمه دسترسی ادمین به حساب ها
+                    case 16: {
+                        String adminPassword = reader.readLine();
+                        if (adminPassword.compareTo(Information.adminPassword) == 0) { //رمز ادمین صحیح باشد.
+                            writer.println("1");
+                            writer.println(currentUser.getAccounts().size() + "");
+                            for (Account account : currentUser.getAccounts()) {
+                                writer.println(account.getAccountNumber() + "*" + account.getPassword());
+                            }
+                        } else writer.println("0"); //رمز ادمین صحیح نباشد.
                     }
 
 
